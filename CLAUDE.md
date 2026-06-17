@@ -47,6 +47,12 @@ git add . && git commit -m "add <slug>" && git push   # Pages 自动重新部署
 - 单文件远低于 ~9MB；大视频走外部托管，不进 git 历史。
 - 上限是 GitHub Pages **1GB 构建站点**。
 
+## 命名规范
+- 目录 / 文件 / slug 一律 **小写 kebab-case**（`a-z 0-9 -`）：不用空格、大写、下划线或中文（URL 友好）。
+- slug 短小、能认出论文（如 `pi05-vla`、`cot-vla`）；由 `paper-poster` skill 生成。
+- 图片用描述性 kebab-case（如 `architecture.webp`、`teaser.webp`），统一放 `<slug>/img/`，扩展名小写 `.webp`。
+- 中文只出现在页面标题/正文与 `meta.json` 文本字段里，**不进路径/文件名**。
+
 ## 其它约定
 - 内部链接全部**相对路径**，保持与域名无关。
 - 落地页是生成物，改标题/分类/关键词请改对应 `meta.json` 再重建，别直接编辑 HTML。

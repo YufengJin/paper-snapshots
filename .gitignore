@@ -1,0 +1,9 @@
+.DS_Store
+**/.DS_Store
+
+# local-only: paper-notes / paper-poster skills + heavy/private tooling
+.claude/
+
+# paper-notes working dir (inbox + raw figure sources, heavy/transient) — only the
+# published WebP under <slug>/ is committed; see pipeline/README.md
+_src/

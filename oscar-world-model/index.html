@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--
+  OSCAR: Omni-Embodiment Action-Conditioned World Model for Robotics
+  arXiv:2606.04463 | 中文海报 | 2026-06-17
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSCAR: Omni-Embodiment Action-Conditioned World Model for Robotics</title>
+<meta name="keywords" content="world model, action-conditioned video generation, cross-embodiment, skeleton rendering, policy evaluation, robot manipulation, diffusion transformer, 机器人策略评估">
+<meta name="description" content="OSCAR 是一个跨机器人形态的动作条件视频世界模型，以 2D 运动骨骼渲染为统一条件表示，在单张 GH200 GPU 上超越 14B 参数基线，实现对机器人策略的精准虚拟评估。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics &nbsp;·&nbsp; arXiv 2026</span>
+    <h1>OSCAR: Omni-Embodiment Action-Conditioned World Model for Robotics</h1>
+    <div class="sub">跨机器人形态的动作条件视频世界模型，精准评估机器人策略</div>
+    <div class="authors">Zhuoyuan Wu¹ &nbsp;&nbsp; Jun Gao²·³ &nbsp;&nbsp; ¹北京大学 &nbsp; ²密歇根大学 &nbsp; ³NVIDIA</div>
+    <p class="lead">OSCAR 是一个精确的动作条件视频世界模型，可跨不同机器人形态泛化，并支持机器人策略的虚拟评估。它以 2D 运动骨骼渲染为统一条件表示，在大规模多源数据集上微调 Cosmos-Predict2.5-2B，在动作跟随精度、外观质量和运动一致性上全面超越参数量大数倍的基线，并在 RoboArena 上展现出与真实世界评估的强相关性。</p>
+    <div class="meta">
+      <span>2B 参数 (Cosmos-Predict2.5)</span>
+      <span>单张 GH200 GPU 训练</span>
+      <span>180,657 条清洗后视频片段</span>
+      <span><a href="https://arxiv.org/abs/2606.04463">📄 arXiv:2606.04463</a></span>
+      <span><a href="https://arxiv.org/abs/2606.04463">论文原文 / Paper</a></span>
+    </div>
+    <div class="kw">
+      <span>world model</span>
+      <span>action-conditioned video</span>
+      <span>cross-embodiment</span>
+      <span>skeleton rendering</span>
+      <span>policy evaluation</span>
+      <span>diffusion transformer</span>
+      <span>机器人策略评估</span>
+      <span>RoboArena</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机</h2>
+    <p class="lead">现有视频世界模型在机器人策略真实评估中面临三大核心挑战：训练数据场景多样性不足、动作跟随不精准、以及跨机器人形态泛化能力差。</p>
+    <blockquote>
+      "Existing video world models face three main challenges for real-world robot evaluation: limited scenario diversity in current robot training datasets, imprecise action following, and poor generalization across embodiments for broad adoption."
+    </blockquote>
+
+    <figure>
+      <img src="img/teaser.webp" alt="OSCAR as real-world policy evaluation proxy on RoboArena">
+      <figcaption>
+        <strong>图 1：OSCAR 作为 RoboArena 的真实世界策略评估代理。</strong>
+        左：OSCAR 生成的 rollout（上）与 π₀-FAST 策略真实世界 rollout（下）对比；从 episode 中均匀采样三帧。
+        右：七种通用机器人策略在 RoboArena 上的平均成功率——使用 OSCAR 世界模型评估结果与真实评估结果呈现强相关性。
+      </figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>2B</b><small>模型参数量（vs. 基线最大 14B）</small></div>
+      <div><b>180K</b><small>清洗后训练 episode 数量</small></div>
+      <div><b>4</b><small>覆盖机器人形态数（+ 人手）</small></div>
+      <div><b>2.165M</b><small>原始数据源 episode 总量</small></div>
+    </div>
+
+    <h3>三大挑战与对应设计</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>挑战 I：动作跟随不精准</h3>
+        <p>视频需要在帧级别（何时发生）和像素级别（何处发生）精确跟随动作序列，才能为策略评估提供有意义的信号。Latent-action 方法将动作压缩为隐变量，往往无法精确传达空间运动。</p>
+      </div>
+      <div class="card">
+        <h3>挑战 II：场景泛化不足</h3>
+        <p>策略评估需要覆盖不同任务、环境和动作序列。现有数据集（如 AgiBot）虽有百万条 clip，却集中在同一场景和任务，视觉多样性极低。</p>
+      </div>
+      <div class="card">
+        <h3>挑战 III：跨形态泛化能力差</h3>
+        <p>世界模型应能泛化到不同机器人形态（Franka Panda、KUKA iiwa、AgiBot G1 等），而非绑定单一机器人，才能支持广泛的策略评估应用。</p>
+      </div>
+      <div class="card">
+        <h3>OSCAR 的两大设计支柱</h3>
+        <p>（1）<strong>大规模标准化数据流水线</strong>：跨 4 种机器人和 2 种人手数据源，经过去冗余、质量过滤，构建覆盖广泛的联合训练数据集。（2）<strong>2D 骨骼渲染统一条件</strong>：仅依赖运动链，无需机器人外观信息，可跨机器人乃至人手泛化。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法</h2>
+    <p class="lead">OSCAR 在 Cosmos-Predict2.5-2B（一个 2B 参数的视频 Diffusion Transformer）基础上微调，以第一帧 RGB 图像和 2D 骨骼渲染序列为条件，自回归生成未来视频帧。</p>
+
+    <figure>
+      <img src="img/architecture.webp" alt="OSCAR method overview">
+      <figcaption>
+        <strong>图 2：OSCAR 方法概览。</strong>
+        OSCAR 由三个组件构成：（1）<strong>条件编码（Condition encoding）</strong>：用 VAE 将第一帧 I₀ 和骨骼序列 S₁:T 编码为隐变量；（2）<strong>条件注入（Conditioning injection）</strong>：将骨骼隐变量与带噪视频隐变量叠加；（3）<strong>视频生成（Video generation）</strong>：DiT 对 token 去噪，VAE 解码最终视频。
+      </figcaption>
+    </figure>
+
+    <h3>3.1 骨骼渲染作为统一条件表示（Skeleton Rendering as Unified Conditioning）</h3>
+    <p>
+      选择正确的动作表示是动作条件世界模型的核心。OSCAR 采用 <strong>2D 运动学骨骼（kinematic skeleton）渲染</strong>，在泛化性与精度之间取得平衡：
+    </p>
+    <ul>
+      <li><strong>泛化性</strong>：骨骼渲染仅依赖运动链（kinematic chain），改变机器人形态只需更新运动学规格；同一表示可用于不同机器人臂或人手。无纹理的渲染避免了模型过拟合到特定机器人的外观。</li>
+      <li><strong>精度</strong>：对比 latent-action（隐式压缩，精度低）和 pointmap/mesh（过于细致，泛化差），骨骼渲染是"只够用"的几何信息——它显式指导机器人动作，同时将外观细节留给视频 prior。</li>
+      <li><strong>实现方式</strong>：给定 URDF 模型 M 与关节配置 q_t，通过正向运动学（FK）得到每个连杆的 SE(3) 位姿 T_{k,t}，将关键点投影到图像平面后光栅化为黑底线图 S_t，作为与目标视频帧对齐的 RGB 条件流输入 DiT。</li>
+    </ul>
+
+    <h3>3.2 人手扩展（Extension to Human Hands）</h3>
+    <p>
+      由于 S₁:T 仅编码 2D 关节投影，同样的条件表示可以无缝扩展到人手。MANO 人手模型的五指拓扑与机械臂运动链用同样的光栅化流程处理，使模型可以联合训练机器人和人体手部的 egocentric 视频，<strong>显著增加场景、任务和动作分布的多样性</strong>。
+    </p>
+
+    <h3>3.3 条件注入（Conditioning Injection）</h3>
+    <p>
+      骨骼序列 S₁:T 经过与目标视频相同的 WAN 2.1 VAE 编码，得到骨骼隐变量 z_s，与带噪视频隐变量通过不同的 patch embedder（PE_v 和 PE_s）嵌入后相加，送入 DiT 进行去噪。训练时以概率 0.2 将 S₁:T 置零，以支持 classifier-free guidance（推理时 guidance scale w=6）。
+    </p>
+
+    <figure>
+      <img src="img/skeleton-data.webp" alt="Skeleton overlays on training data sources">
+      <figcaption>
+        <strong>图 3：八个训练数据源上的骨骼覆盖可视化。</strong>
+        上排（四种机器人录制）：DROID、RH20T-cfg5（Franka Panda）、RH20T-cfg7（KUKA iiwa）、InternData；
+        下排（人形与人手数据）：AgiBot G1、AIROA-MoMa、EgoDex、EPIC-Kitchens。
+        每格展示同一数据源的四个 episode 帧。
+      </figcaption>
+    </figure>
+
+    <h3>3.4 大规模数据流水线</h3>
+    <p>从 2,165,359 条原始视频中清洗出 180,657 条高质量 episode，经过四阶段过滤：</p>
+    <ul>
+      <li><strong>长度过滤</strong>：每条 clip 至少 70 帧，保证足够的 rollout 时长。</li>
+      <li><strong>静态相机过滤</strong>：剔除相机运动幅度超过阈值的 episode。</li>
+      <li><strong>有效动作过滤</strong>：每条 episode 必须包含非平凡的机械臂动作序列。</li>
+      <li><strong>可见骨骼过滤</strong>：骨骼可见比例须高于阈值。</li>
+      <li><strong>语义去冗余（两阶段）</strong>：先用 SigLIP 图像嵌入的余弦相似度（阈值 0.95）聚类视觉相似候选对，再用 64 步重采样轨迹的 RMS 距离验证轨迹相似性，仅当视觉和轨迹均相似时才标记为重复。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验</h2>
+    <p class="lead">在 200 条机器人操作 clip 组成的自建 benchmark 上评估（来自 Franka Panda、KUKA iiwa、AgiBot G1、Toyota HSR 四种形态），与七个基线对比，指标涵盖 PSNR、SSIM、LPIPS、tLPIPS、FVD、FID、L2_latent 和 FPS，全部在 NVIDIA GH200 GPU 上计时。</p>
+
+    <h3>5.2 与基线定量对比（Table 2）</h3>
+    <table>
+      <tr>
+        <th>方法</th>
+        <th>PSNR ↑</th>
+        <th>SSIM ↑</th>
+        <th>LPIPS ↓</th>
+        <th>tLPIPS ↓</th>
+        <th>FVD ↓</th>
+        <th>FID ↓</th>
+        <th>L2_lat ↓</th>
+        <th>FPS ↑</th>
+      </tr>
+      <tr>
+        <td>Cosmos-Predict2.5</td>
+        <td>14.78</td><td>0.563</td><td>0.370</td><td>0.022</td><td>18.01</td><td>47.59</td><td>0.435</td><td>0.292</td>
+      </tr>
+      <tr>
+        <td>TesserAct</td>
+        <td>16.26</td><td>0.730</td><td>0.277</td><td>0.055</td><td>24.50</td><td>51.90</td><td>0.364</td><td>0.343</td>
+      </tr>
+      <tr>
+        <td>IRASim</td>
+        <td>6.48</td><td>0.088</td><td>0.909</td><td>0.606</td><td>411.42</td><td>394.10</td><td>2.453</td><td>2.330</td>
+      </tr>
+      <tr>
+        <td>Ctrl-World</td>
+        <td>19.06</td><td>0.705</td><td>0.321</td><td>0.042</td><td>28.90</td><td>53.33</td><td>0.292</td><td>1.631</td>
+      </tr>
+      <tr>
+        <td>EnerVerse-AC</td>
+        <td>20.47</td><td>0.746</td><td>0.223</td><td>0.021</td><td>33.70</td><td>38.23</td><td>0.197</td><td>1.900</td>
+      </tr>
+      <tr>
+        <td>Genie Envisioner</td>
+        <td>23.29</td><td><u>0.838</u></td><td><u>0.140</u></td><td><strong>0.007</strong></td><td><u>15.37</u></td><td><u>22.92</u></td><td><u>0.129</u></td><td>1.382</td>
+      </tr>
+      <tr>
+        <td>Kinema4D</td>
+        <td>17.68</td><td>0.741</td><td>0.198</td><td>0.021</td><td>17.07</td><td>37.16</td><td>0.233</td><td>0.089</td>
+      </tr>
+      <tr style="background:var(--panel2)">
+        <td><strong>OSCAR（本文）</strong></td>
+        <td class="good"><strong>24.24</strong></td>
+        <td class="good"><strong>0.846</strong></td>
+        <td class="good"><strong>0.094</strong></td>
+        <td class="good"><u>0.015</u></td>
+        <td class="good"><strong>7.08</strong></td>
+        <td class="good"><strong>15.07</strong></td>
+        <td class="good"><strong>0.096</strong></td>
+        <td class="good"><u>2.214</u></td>
+      </tr>
+    </table>
+    <p style="font-size:14px;color:var(--muted)">粗体为最优，下划线为次优。OSCAR 在七项指标中均达到最优或次优，且仅用 2B 参数，远小于 Kinema4D（14B）。</p>
+
+    <figure>
+      <img src="img/qualitative.webp" alt="Qualitative comparison across embodiments">
+      <figcaption>
+        <strong>图 4：两种机器人形态（AgiBot G1 和 DROID）上的动作条件视频生成定性对比。</strong>
+        列依次为：GT（真值）、OSCAR（本文）、Cosmos-P2.5、TesserAct、Ctrl-World、GE-Sim、Kinema4D。
+        与五个基线相比，OSCAR 在保持精准动作跟随的同时，视觉质量显著更优。
+      </figcaption>
+    </figure>
+
+    <h3>5.3 消融实验（Table 3）</h3>
+    <p>消融两个关键因素：<strong>条件表示</strong>和<strong>数据策略</strong>。</p>
+    <table>
+      <tr>
+        <th>维度</th><th>变体</th><th>PSNR ↑</th><th>SSIM ↑</th><th>LPIPS ↓</th><th>FVD ↓</th><th>FID ↓</th>
+      </tr>
+      <tr>
+        <td rowspan="3">条件表示</td><td>Latent action</td>
+        <td>19.22</td><td>0.784</td><td>0.170</td><td>12.03</td><td>26.11</td>
+      </tr>
+      <tr>
+        <td>Mesh rendering</td>
+        <td>23.11</td><td>0.831</td><td>0.106</td><td>7.89</td><td>16.38</td>
+      </tr>
+      <tr>
+        <td><strong>Skeleton（最终）</strong></td>
+        <td class="good"><strong>23.48</strong></td><td class="good"><strong>0.832</strong></td><td class="good"><strong>0.106</strong></td><td class="good"><strong>7.69</strong></td><td class="good"><strong>16.37</strong></td>
+      </tr>
+      <tr>
+        <td rowspan="2">数据策略</td><td>+Human from beginning</td>
+        <td>23.87</td><td>0.842</td><td>0.097</td><td>7.65</td><td>15.72</td>
+      </tr>
+      <tr>
+        <td><strong>+Human, warm-start（最终）</strong></td>
+        <td class="good"><strong>24.24</strong></td><td class="good"><strong>0.846</strong></td><td class="good"><strong>0.094</strong></td><td class="good"><strong>7.08</strong></td><td class="good"><strong>15.07</strong></td>
+      </tr>
+    </table>
+    <p>
+      关键发现：（i）<strong>Latent action 无法精准跟随动作</strong>；（ii）Mesh 和 Skeleton 在七项指标上统计上无显著差异，但 Mesh 依赖机器人 URDF 外观资产，无法引入人体数据；（iii）<strong>人体数据的引入一致提升所有指标</strong>，warm-start 策略（先用机器人数据训练再加入人体数据）优于从头混合训练。
+    </p>
+
+    <h3>5.4 策略评估（Policy Evaluation on RoboArena）</h3>
+    <p>
+      将 OSCAR 部署到 RoboArena 公开排行榜，对 7 个通用 DROID 策略（π₀-flow、π₀-FAST、PG-flow、PG-FSQ、PG-FAST、PG-FAST+、PG-Bin）进行评估：
+      在 65 个 session 上自回归展开 OSCAR，用 GPT-5 评估每条 episode 的成功率，计算 Pearson 相关系数 r 和 Spearman ρ。
+    </p>
+    <table>
+      <tr><th>条件表示</th><th>MMRV ↓</th><th>ρ ↑</th><th>r ↑</th><th>SISR_Δ (pp) ↓</th></tr>
+      <tr><td>Latent action</td><td>1.429</td><td>+0.643</td><td>+0.867</td><td>1.98</td></tr>
+      <tr><td>Mesh</td><td>0.714</td><td>+0.679</td><td>+0.781</td><td>3.04</td></tr>
+      <tr style="background:var(--panel2)"><td><strong>Skeleton（本文）</strong></td><td class="good"><strong>0.571</strong></td><td class="good"><strong>+0.750</strong></td><td class="good"><strong>+0.852</strong></td><td class="good"><strong>1.73</strong></td></tr>
+    </table>
+    <p>骨骼条件与真实世界部署的相关性最强（MMRV=0.571，Pearson r=+0.852），证明 OSCAR 可有效替代真实机器人评估。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性</h2>
+    <div class="note"><b>说明：</b>以下局限性均为作者在论文 Conclusion 节中明确陈述（stated）。</div>
+    <details class="lim" open>
+      <summary>相机标定与运动学标注质量受限</summary>
+      <p>
+        "Our current data scale is limited by the availability and quality of per-dataset camera calibration and kinematic annotations: errors in camera intrinsics/extrinsics directly degrade skeleton–RGB alignment, limiting the availability of raw video data that can be reliably converted into usable training dataset."
+        即相机内外参数的误差会直接导致骨骼与 RGB 图像的对齐偏差，可用训练数据规模因此受限。
+      </p>
+    </details>
+    <details class="lim">
+      <summary>模型规模仅为 2B，扩展受限</summary>
+      <p>
+        "Our model only uses a 2B-parameter backbone; scaling to larger backbones may further improve fidelity and generalization but requires more compute."
+        当前 backbone 为 2B 参数，更大规模的 backbone 可能进一步提升保真度和泛化能力，但计算成本相应增加。
+      </p>
+    </details>
+    <details class="lim">
+      <summary>仅支持静态相机场景</summary>
+      <p>
+        数据过滤阶段主动剔除了相机运动的 episode（"We mainly focus on the robot action in our paper and defer the camera motion for future work"），因此当前模型不支持移动相机场景，限制了对移动操作任务的策略评估能力。
+      </p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · OSCAR: Omni-Embodiment Action-Conditioned World Model for Robotics · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2606.04463">https://arxiv.org/abs/2606.04463</a>
+  </div>
+</footer>
+
+</body>
+</html>

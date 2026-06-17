@@ -1,0 +1,20 @@
+{
+  "slug": "memer",
+  "title": "MemER: Scaling Up Memory for Robot Control via Experience Retrieval",
+  "arxiv_id": "2510.20328",
+  "url": "https://arxiv.org/abs/2510.20328",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "长时程机器人操作",
+    "experience retrieval",
+    "keyframe selection",
+    "hierarchical policy",
+    "VLA",
+    "视觉语言动作模型",
+    "memory-based control",
+    "情节记忆"
+  ],
+  "summary_zh": "MemER 是一个分层策略框架，通过在线关键帧筛选（keyframe selection）为机器人策略赋予长时程视觉记忆能力。High-level policy 基于 Qwen2.5-VL-7B-Instruct 微调，负责从历史观测中提名并聚类关键帧，同时预测当前子任务供 low-level VLA（π₀.₅）执行。仅需 50 条示范，MemER 在三个需要分钟级记忆的真实机器人操作任务上大幅超越无记忆及朴素长上下文基线，成功率均超过 90%，并接近人类 oracle 水平。",
+  "date": "2026-06-17",
+  "source": "arxiv-html"
+}

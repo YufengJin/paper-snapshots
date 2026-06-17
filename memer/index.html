@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<!--
+  MemER: Scaling Up Memory for Robot Control via Experience Retrieval
+  arXiv: 2510.20328 | slug: memer | date: 2026-06-17
+  中文海报，无 EN 版本。
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemER: Scaling Up Memory for Robot Control via Experience Retrieval</title>
+<meta name="keywords" content="长时程机器人操作, experience retrieval, keyframe selection, hierarchical policy, VLA, 视觉语言动作模型, memory-based control, 情节记忆">
+<meta name="description" content="MemER 是一个分层策略框架，通过关键帧检索为机器人策略赋予长时程视觉记忆能力，在需要数分钟记忆的真实操作任务上大幅超越基线方法。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:38px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · arXiv 2510.20328</span>
+    <h1>MemER: Scaling Up Memory for Robot Control via Experience Retrieval</h1>
+    <div class="sub">通过经验检索为机器人策略赋予长时程视觉记忆</div>
+    <div class="authors">Ajay Sridhar, Jennifer Pan*, Satvik Sharma, Chelsea Finn &nbsp;·&nbsp; Stanford University &nbsp;·&nbsp; *Equal contribution</div>
+    <p class="lead">
+      当前机器人策略普遍缺乏长时程记忆能力——直接输入长观测序列既计算昂贵，又在分布偏移下容易过拟合。
+      MemER 提出一个分层策略框架：high-level policy 负责从历史观测中筛选并跟踪任务相关关键帧（keyframes），
+      再将这些关键帧与最近帧一并传给 low-level VLA 执行具体动作。
+      在三个需要数分钟记忆的真实长时程操作任务上，MemER 大幅超越无记忆及朴素长上下文基线，并接近人类 high-level oracle 性能。
+    </p>
+    <div class="meta">
+      <span>Stanford University</span>
+      <span>Real-robot · Franka arm</span>
+      <span>Only 50 demos per task</span>
+      <span><a href="https://arxiv.org/abs/2510.20328">📄 arXiv:2510.20328</a></span>
+      <span><a href="https://jen-pan.github.io/memer/">🔗 Project Page</a></span>
+    </div>
+    <div class="kw">
+      <span>长时程机器人操作</span>
+      <span>experience retrieval</span>
+      <span>keyframe selection</span>
+      <span>hierarchical policy</span>
+      <span>VLA</span>
+      <span>视觉语言动作模型</span>
+      <span>memory-based control</span>
+      <span>情节记忆</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · Motivation</a>
+  <a href="#method">2 · Method</a>
+  <a href="#exp">3 · Experiments</a>
+  <a href="#limit">4 · Limitations</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> Motivation</h2>
+    <p class="lead">
+      现有的机器人操作策略虽然在泛化能力上取得了显著进展，但普遍存在一个关键缺陷——<strong>缺乏长时程记忆</strong>。
+      人类执行任务时会自然地依赖记忆（如记住花生酱放在哪个柜子里），机器人却做不到。
+    </p>
+    <blockquote>
+      "Naively conditioning on long observation histories is computationally expensive and brittle under covariate shift,
+      while indiscriminate subsampling of history leads to irrelevant or redundant information."
+    </blockquote>
+    <p>
+      现有的两类解决方向各有缺陷：
+      <ul>
+        <li><strong>直接延长观测窗口</strong>：计算代价随帧数线性增长，32帧（≈16秒记忆）已使推理延迟逼近1秒上限，远不足以处理数分钟量级的任务；此外，长历史还会引入 covariate shift，导致策略在自身产生的轨迹上泛化失败。</li>
+        <li><strong>压缩/下采样历史</strong>：均匀采样引入大量无关信息；视觉 trace 等压缩方式难以扩展到需要跨越数百帧的任务。</li>
+      </ul>
+    </p>
+
+    <figure>
+      <img src="img/teaser.webp" alt="MemER Overview">
+      <figcaption>
+        <strong>图1 · MemER 总览。</strong>
+        MemER 是一个通过经验检索来扩展机器人控制记忆的框架。利用单个策略（仅需少量专家示范训练），
+        MemER 能够检索并利用任务相关的历史信息，有效处理三个复杂的长时程任务。
+      </figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>&gt;90%</b><small>三项任务的成功率（MemER）</small></div>
+      <div><b>34%</b><small>Long History 基线与 MemER 的平均差距</small></div>
+      <div><b>50</b><small>每个任务仅需 50 条长时程演示</small></div>
+      <div><b>~1Hz</b><small>high-level 推理频率，满足实时部署要求</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> Method</h2>
+    <p class="lead">
+      MemER 将策略分解为两层：<strong>high-level policy</strong>（基于 Qwen2.5-VL-7B-Instruct 微调）负责在每个推理步骤筛选关键帧并预测当前子任务（language subtask）；
+      <strong>low-level policy</strong>（基于 π₀.₅ 微调）根据子任务指令执行具体的关节控制动作。
+      两个策略异步运行：π_h 约 1Hz，π_l 约 2Hz。
+    </p>
+
+    <figure>
+      <img src="img/architecture.webp" alt="MemER Architecture">
+      <figcaption>
+        <strong>图2 · MemER 架构。</strong>
+        High-level policy 接受任务指令、已选关键帧 <em>K_t</em> 和最近 N 帧图像，
+        输出：① 当前子任务 l'_t，② 候选关键帧 J_t。
+        候选帧经过 keyframe filter 去冗余后更新选定关键帧集合，供下一步推理使用。
+        Low-level policy 仅接受当前图像、关节状态和子任务指令，输出动作块（action chunk）。
+      </figcaption>
+    </figure>
+
+    <h3>High-Level Policy：关键帧提名与子任务预测</h3>
+    <p>
+      在每个时刻 <em>t</em>，high-level policy 接收三部分输入：
+      <ul>
+        <li>最近 N 帧（每台相机共享同一上下文窗口）：<em>R_t = I_{t−N+1:t}</em></li>
+        <li>高层任务指令 <em>l_t</em></li>
+        <li>已选关键帧集合 <em>K_t ⊆ I_{0:t−N+1}</em>，实践中 |K_t| ≤ 8</li>
+      </ul>
+      输出两项：当前子任务 <em>l'_t</em> 和候选关键帧 <em>J_t ⊆ R_t</em>。
+      这些候选帧将进入 keyframe filter，决定是否纳入长期记忆。
+    </p>
+
+    <h3>Keyframe Filter：1D 单链接聚类去冗余</h3>
+    <p>
+      为避免记忆爆炸，MemER 使用一个轻量的在线聚类算法对历次候选帧进行整合。
+      具体地，将所有候选帧的时间戳汇总为 G_{0:t}，对距离不超过 d 帧的索引进行合并，
+      形成若干不相交簇（cluster）。每个簇取中位帧作为代表性关键帧。
+      重复提名的帧会获得更高权重（中位数偏向提名集中处），确保记忆的代表性。
+      该流程在单台 CPU 上毫秒级完成，不引入额外模型，支持流式实时更新。
+    </p>
+
+    <figure>
+      <img src="img/clustering.webp" alt="1D Single-Linkage Clustering for Keyframe Selection">
+      <figcaption>
+        <strong>图3 · 关键帧选取的 1D 单链接聚类可视化。</strong>
+        每个时刻，high-level policy 提名候选帧（橙色高亮）。所有候选帧以合并距离 d=5 聚类，
+        柱高表示某时刻帧被提名的次数，取每簇中位帧加入记忆。
+      </figcaption>
+    </figure>
+
+    <h3>关键帧标注与训练</h3>
+    <p>
+      为训练 high-level policy，论文采用半自动标注流程：
+      首先提取相邻子任务边界帧作为候选，再由人工为每类子任务制定统一规则（取第一帧/最后帧/不取），
+      最终自动应用于所有演示，每段子任务至多产生一个关键帧标注。
+      仅需 50 条长时程演示及 10–15 条干预演示即可完成微调。
+    </p>
+
+    <h3>Model Merging：保留预训练泛化性</h3>
+    <p>
+      纯微调后的 high-level policy 对低层策略出现的重试/冻结行为鲁棒性下降（训练数据全为专家轨迹，缺乏失败恢复样本）。
+      受 Anonymous (2025) 启发，论文将预训练权重 θ_pre 与微调权重 θ_ft 进行线性插值：
+      <em>θ = (1−α)·θ_pre + α·θ_ft</em>，其中 α=0.8。
+      实验表明 model merging 在所有任务上均能维持或提升性能。
+    </p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> Experiments</h2>
+    <p class="lead">
+      实验在真实 Franka 机械臂（DROID 设置，ZED 第三视角相机 + 腕部 miniZED 相机，分辨率 320×180）上开展，
+      针对三个需要分钟级记忆的长时程任务各进行 20 次试验。
+    </p>
+
+    <figure>
+      <img src="img/tasks.webp" alt="Tasks and Subtasks">
+      <figcaption>
+        <strong>图4 · 三项评测任务。</strong>
+        每列展示任务的复杂指令、中间子任务及对应关键帧预测。
+        从左到右：Object Search（搜索并取出指定物体）、Counting Scoops（精准计数舀取）、Dust &amp; Replace（除尘并复位物体）。
+      </figcaption>
+    </figure>
+
+    <h3>主要结果（Q1：与记忆基线的对比）</h3>
+    <p>所有方法共享同一 low-level policy，仅 high-level policy 的输入上下文不同：</p>
+    <table>
+      <tr>
+        <th>方法</th>
+        <th>Object Search<br>取出次数 ↑ / 最优路径 ↑</th>
+        <th>Counting<br>多/少勺数 ↓</th>
+        <th>Dust &amp; Replace<br>成功指标合计 /4 ↑</th>
+      </tr>
+      <tr>
+        <td class="good">MemER（本文）</td>
+        <td class="good">59 / 57</td>
+        <td class="good">1</td>
+        <td class="good">77/80</td>
+      </tr>
+      <tr>
+        <td>No History（无记忆）</td>
+        <td>32 / 25</td>
+        <td>61</td>
+        <td>21/80</td>
+      </tr>
+      <tr>
+        <td>Short History（N=8 帧）</td>
+        <td>38 / 31</td>
+        <td>26</td>
+        <td>51/80</td>
+      </tr>
+      <tr>
+        <td>Long History（N=32 帧）</td>
+        <td>47 / 41</td>
+        <td>12</td>
+        <td>46/80</td>
+      </tr>
+      <tr>
+        <td>Human HL（人类上界）</td>
+        <td>58 / 58</td>
+        <td>0</td>
+        <td>75/80</td>
+      </tr>
+    </table>
+    <p>
+      Long History（32帧，≈16秒记忆）仍比 MemER 平均差 <strong>34%</strong>，且推理延迟接近1秒上限。
+      MemER 在所有三项任务上成功率均超过 90%，主要失败来源是 low-level policy 执行失误，而非记忆错误。
+    </p>
+
+    <h3>Q2：与专有 API VLM 的对比（离线评测）</h3>
+    <p>
+      由于 GPT-5 和 Gemini Robotics–ER 1.5 的 API 延迟高达 10–15 秒，无法满足闭环部署的实时要求（&lt;1秒），
+      论文设计了离线轨迹准确率评测（trajectory accuracy）和子任务切换准确率（boundary accuracy）。
+    </p>
+    <table>
+      <tr>
+        <th>方法</th>
+        <th>Object Search<br>Traj / Boundary</th>
+        <th>Counting<br>Traj / Boundary</th>
+        <th>Dust &amp; Replace<br>Traj / Boundary</th>
+      </tr>
+      <tr>
+        <td class="good">MemER（本文）</td>
+        <td class="good">0.80 / 0.76</td>
+        <td class="good">0.67 / 0.65</td>
+        <td class="good">0.87 / 0.86</td>
+      </tr>
+      <tr>
+        <td>GPT-5</td>
+        <td>0.15 / 0.16</td>
+        <td>0.43 / 0.47</td>
+        <td>0.67 / 0.63</td>
+      </tr>
+      <tr>
+        <td>Gemini Robotics–ER 1.5</td>
+        <td>0.21 / 0.23</td>
+        <td>0.13 / 0.14</td>
+        <td>0.19 / 0.22</td>
+      </tr>
+    </table>
+    <p>
+      零样本 API VLM 的主要失败原因：提名过多无用候选帧，无法识别哪些帧真正重要，
+      导致子任务预测不准确——说明机器人感知特定的关键帧识别能力需要专门微调。
+    </p>
+
+    <h3>Q3：记忆模态对比（图像 vs. 文本）</h3>
+    <p>
+      论文对比了三种记忆表示方式：① 视觉关键帧（MemER）、② 文本子任务（Short History + Text）、③ 图文混合（MemER + Text）。
+      结果表明，<strong>纯视觉关键帧记忆性能最佳</strong>。加入文本后，模型往往过度依赖文本 token，忽视视觉输入；
+      文本记忆在策略重试/冻结导致轨迹偏离时尤为脆弱，无法捕获物体位置等关键视觉细节（如 Object Search 中已搜索过的 bin）。
+    </p>
+
+    <h3>消融：Model Merging</h3>
+    <p>
+      在所有三项任务上，将预训练权重（α=0.8）与微调权重融合均能维持或提升性能，
+      尤其在低层策略出现重试行为时有明显帮助，印证了线性权重插值对抗过拟合的有效性。
+    </p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> Limitations</h2>
+    <div class="note"><b>Note：</b>以下限制均为论文作者在 Discussion and Future Work 部分明确陈述（stated）。</div>
+
+    <details class="lim" open>
+      <summary>记忆无上限——缺乏关键帧遗忘机制</summary>
+      <p>MemER 持续累积信息性关键帧，但目前缺乏在关键帧数量过多时主动丢弃的机制。
+      对于需要数小时记忆的任务，这一问题可能导致上下文溢出。
+      论文指出："enabling the high-level policy to reason about which keyframes to not only add but also delete
+      for modifiable long-term memory is an exciting direction for future work."</p>
+    </details>
+
+    <details class="lim">
+      <summary>推理吞吐量受 VLM 骨干与调度策略制约</summary>
+      <p>π_h 约 1Hz、π_l 约 2Hz 的异步调度已接近可容忍的延迟上限，
+      无法支持非常高频率的控制（如精细装配任务）。
+      论文提出 improved model caching 和更好的 tokenization 是进一步降低推理延迟的方向。</p>
+    </details>
+
+    <details class="lim">
+      <summary>记忆仅限于视觉观测</summary>
+      <p>当前 MemER 的记忆完全基于图像帧，未纳入触觉、音频等其它感知模态。
+      论文认为"incorporating other sensory modalities such as tactile or audio is a promising extension."</p>
+    </details>
+
+    <details class="lim">
+      <summary>仅在单一机器人本体 / 单房间场景上验证</summary>
+      <p>所有实验均在 Franka 手臂 + DROID 台架上进行，未测试移动机器人或跨房间任务。
+      论文指出扩展到"mobile manipulation and multi-room tasks, where memory must interleave spatial mapping
+      with episodic recall"是使系统更接近人类记忆能力的重要一步。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    本海报整理自论文原文与图表 · 仅供学术参考<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2510.20328">https://arxiv.org/abs/2510.20328</a>
+    &nbsp;·&nbsp; Project: <a href="https://jen-pan.github.io/memer/">https://jen-pan.github.io/memer/</a>
+  </div>
+</footer>
+
+</body>
+</html>

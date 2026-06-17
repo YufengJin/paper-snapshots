@@ -1,0 +1,11 @@
+{
+  "slug": "robomemarena",
+  "title": "RoboMemArena: A Comprehensive and Challenging Robotic Memory Benchmark",
+  "arxiv_id": "2605.10921",
+  "url": "https://arxiv.org/abs/2605.10921",
+  "category": "机器人 · Robotics",
+  "keywords": ["robotic memory benchmark", "long-horizon manipulation", "VLA", "PrediMem", "predictive coding", "keyframe buffer", "dual-system 架构", "记忆依赖子任务", "仿真到现实迁移"],
+  "summary_zh": "RoboMemArena 是一个包含 26 项仿真任务与 5 项真实任务的大规模机器人记忆基准，平均轨迹超 1000 步，68.9% 子任务依赖记忆；配套提出双系统 VLA PrediMem（high-level VLM planner + low-level VLA actor，结合 keyframe buffer 与 predictive coding），在所有任务类别上超越现有基线，平均 TSR 达 38.5%。",
+  "date": "2026-06-17",
+  "source": "arxiv-html"
+}

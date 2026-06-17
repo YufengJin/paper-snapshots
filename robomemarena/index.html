@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<!--
+  PAPER POSTER — self-contained, no dependencies. 中文海报，无 EN 版本。
+  Body text in 中文; keep academic terms / names / metrics / quoted phrases in English.
+  REQUIRED: <meta name="keywords"> + visible .kw chips + arXiv link (header & footer).
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoboMemArena: A Comprehensive and Challenging Robotic Memory Benchmark</title>
+<meta name="keywords" content="robotic memory benchmark, long-horizon manipulation, VLA, PrediMem, memory-dependent subtask, predictive coding, 机器人基准测试, keyframe buffer, dual-system">
+<meta name="description" content="RoboMemArena 是一个包含 26 项仿真任务的大规模机器人记忆基准，平均轨迹超 1000 步，68.9% 子任务依赖记忆；配套提出的双系统 VLA PrediMem 在所有类别上超越现有基线。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · cs.RO · 2026</span>
+    <h1>RoboMemArena</h1>
+    <div class="sub">A Comprehensive and Challenging Robotic Memory Benchmark</div>
+    <div class="authors">Huashuo Lei, Wenxuan Song, Huarui Zhang, Jieyuan Pei, Jiayi Chen, Haodong Yan, Han Zhao, Pengxiang Ding, Zhipeng Zhang, Lida Huang, Donglin Wang, Yan Wang, Haoang Li</div>
+    <p class="lead">RoboMemArena 是首个系统性评估机器人记忆能力的大规模基准：包含 26 项仿真任务与 5 项真实世界任务，平均轨迹长达 1000+ 步，68.9% 的子任务依赖历史记忆。作者同步提出双系统 VLA 模型 PrediMem，通过分级记忆与 predictive coding 在所有任务类别上显著超越现有方法。</p>
+    <div class="meta">
+      <span>arXiv · 2026-05-11</span>
+      <span>26 仿真任务 + 5 真实任务</span>
+      <span>平均轨迹 &gt;1000 步</span>
+      <span><a href="https://arxiv.org/abs/2605.10921">📄 arXiv:2605.10921</a></span>
+      <span><a href="https://robomemarena.github.io">🌐 Project Page</a></span>
+    </div>
+    <div class="kw">
+      <span>robotic memory benchmark</span>
+      <span>long-horizon manipulation</span>
+      <span>VLA</span>
+      <span>PrediMem</span>
+      <span>predictive coding</span>
+      <span>keyframe buffer</span>
+      <span>dual-system 架构</span>
+      <span>记忆依赖子任务</span>
+      <span>仿真到现实迁移</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机 / Motivation</h2>
+    <p class="lead">现有机器人操作基准大多关注单步或短序列动作，对<strong>跨时间步记忆能力</strong>的评估严重不足。当物体被遮挡、状态发生改变、或任务依赖此前操作结果时，reactive 策略（仅依赖当前观测）将系统性失败——而这恰恰是真实操作场景中的常态。</p>
+    <blockquote>
+      "Existing robotic memory benchmarks suffer from...lack of multimodal annotations...limited task coverage...restricted to simulation."
+    </blockquote>
+
+    <figure>
+      <img src="img/teaser.webp" alt="RoboMemArena 四大任务类别可视化">
+      <figcaption><strong>Figure 1.</strong> RoboMemArena 四大任务类别可视化。每行依次展示任务指令、子任务分解与执行轨迹：Multi-Object Counting（计数）、Occlusion（遮挡）、Sequence（序列）、Transferring（转移）。每类任务都要求机器人在长时间跨度内维护并利用记忆状态。</figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>26</b><small>仿真任务</small></div>
+      <div><b>1000+</b><small>平均轨迹步数</small></div>
+      <div><b>68.9%</b><small>子任务依赖记忆</small></div>
+      <div><b>8</b><small>领先于所有对比基准测试的评估维度</small></div>
+    </div>
+
+    <figure>
+      <img src="img/stats.webp" alt="RoboMemArena 统计摘要">
+      <figcaption><strong>Figure 2.</strong> RoboMemArena 基准统计。(a) 平均轨迹长度对比先前基准；(b) 任务构成（4 大类分布）；(c) history-dependent subtask ratio——凸显本基准长时域特性与记忆依赖子任务的高占比。</figcaption>
+    </figure>
+
+    <h3>与已有基准的对比</h3>
+    <p>论文在 14 个已有机器人基准上做了系统对比，RoboMemArena 是唯一同时满足以下全部 8 项标准的基准：长时域（&gt;1000 步平均）、自动指令生成、原子子目标、可扩展生成、自主抓取（AnyGrasp）、状态 oracle、原生 keyframe、真实世界评估。</p>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法 / Method</h2>
+    <p class="lead">本文贡献两部分：(1) RoboMemArena 基准的<strong>数据生成 pipeline</strong>，利用 VLM 驱动任务分解与 AnyGrasp 自主轨迹生成；(2) 用于基准测试的<strong>双系统 VLA 模型 PrediMem</strong>，结合分级记忆与 predictive coding 机制。</p>
+
+    <h3>基准生成 Pipeline（三阶段）</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>Stage 1: VLM 驱动任务分解</h3>
+        <p>利用 VLM 对每个任务提出有序的可执行子任务序列，自动生成结构化指令标注。</p>
+      </div>
+      <div class="card">
+        <h3>Stage 2: AnyGrasp 自主轨迹生成</h3>
+        <p>每个子任务由 AnyGrasp 自主执行，无需人工干预，生成 2,600 条长时域视觉轨迹 + 15,100 条 keyframe 对齐短片段。</p>
+      </div>
+      <div class="card">
+        <h3>Stage 3: 多条件 Keyframe 提取</h3>
+        <p>基于两类准则提取 keyframe：物理交互锚点（gripper 状态转变）与运动学拐点（速度极小值、方向变化）。</p>
+      </div>
+      <div class="card">
+        <h3>评估指标</h3>
+        <p><strong>TSR（Task Success Rate）</strong>：所有谓词均满足才算成功。<strong>CSR（Cumulative Success Rate）</strong>：衡量每项任务通过的 verification stage 比例，量化任务进展。每任务 3–9 个 stage，多数超过 5 个。</p>
+      </div>
+    </div>
+
+    <h3>PrediMem：双系统 VLA</h3>
+    <figure>
+      <img src="img/architecture.webp" alt="PrediMem pipeline 架构图">
+      <figcaption><strong>Figure 3.</strong> PrediMem pipeline。系统由两个异步耦合组件构成：S1（低层 action policy，执行当前子任务）与 S2（高层规划器，预测 keyframe 并调度下一子任务）。Memory bank 含 recent buffer（5 帧）与不设上限的 keyframe buffer。</figcaption>
+    </figure>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>S2 高层规划器</h3>
+        <p>基于 Qwen3-VL-8B 的高层 VLM 规划器，管理 memory bank（recent buffer + keyframe buffer），负责预测子任务与 keyframe 决策。运行频率约 1.06 Hz，p50 延迟 0.939 秒。</p>
+      </div>
+      <div class="card">
+        <h3>S1 低层执行器</h3>
+        <p>以子任务条件生成动作 chunk 的低层 VLA policy，运行频率约 3.40 Hz，每次 S2 更新平均覆盖约 2.92 个 chunk，实现异步流水线。</p>
+      </div>
+    </div>
+
+    <h3>Predictive Coding Head</h3>
+    <p>仅在训练阶段使用的辅助损失，提升模型对状态转变的敏感度。损失函数：</p>
+    <blockquote>
+      ℒ<sub>Pre</sub> = MSE(Ẑ<sub>t+1</sub>, sg(Z<sub>t+1</sub>)) + (1 − cos(Ẑ<sub>t+1</sub>, sg(Z<sub>t+1</sub>)))
+    </blockquote>
+    <p>最优损失权重为 0.1（在 0.0–1.0 消融实验中表现最佳）。Vision tower 冻结，其余模块全量微调，训练 2 个 epoch，使用 4×H100 GPU，学习率 1×10⁻⁵。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验 / Experiments</h2>
+    <p class="lead">在 RoboMemArena 的 26 项仿真任务与 5 项真实世界任务上评估 PrediMem，与 π₀.₅、HiF-VLA、MemoryVLA、MemER 以及闭源大模型（Qwen3-VL、GPT）对比。</p>
+
+    <h3>主要仿真结果（Table 2）</h3>
+    <table>
+      <tr>
+        <th>方法</th>
+        <th>Transferring<br>TSR / CSR</th>
+        <th>Occlusion<br>TSR / CSR</th>
+        <th>Counting<br>TSR / CSR</th>
+        <th>Sequence<br>TSR / CSR</th>
+        <th>Avg<br>TSR / CSR</th>
+      </tr>
+      <tr>
+        <td>π₀.₅（reactive baseline）</td>
+        <td>20.0 / 42.8</td>
+        <td>12.7 / 17.2</td>
+        <td>14.3 / 50.9</td>
+        <td>60.0 / 71.6</td>
+        <td>21.5 / 38.7</td>
+      </tr>
+      <tr>
+        <td>HiF-VLA</td>
+        <td>17.5 / 38.9</td>
+        <td>12.7 / 27.1</td>
+        <td>8.6 / 45.9</td>
+        <td>42.5 / 70.2</td>
+        <td>16.9 / 39.8</td>
+      </tr>
+      <tr>
+        <td>MemoryVLA</td>
+        <td>15.0 / 37.2</td>
+        <td>7.3 / 13.1</td>
+        <td>14.3 / 55.1</td>
+        <td>37.5 / 65.2</td>
+        <td>15.0 / 35.3</td>
+      </tr>
+      <tr>
+        <td>MemER</td>
+        <td>20.0 / 36.1</td>
+        <td>16.4 / 33.2</td>
+        <td>27.1 / 65.1</td>
+        <td>65.0 / 79.1</td>
+        <td>27.3 / 49.1</td>
+      </tr>
+      <tr>
+        <td class="good"><strong>PrediMem（本文）</strong></td>
+        <td class="good"><strong>22.5 / 45.2</strong></td>
+        <td class="good"><strong>27.3 / 38.4</strong></td>
+        <td class="good"><strong>45.7 / 69.3</strong></td>
+        <td class="good"><strong>72.5 / 89.5</strong></td>
+        <td class="good"><strong>38.5 / 55.2</strong></td>
+      </tr>
+      <tr>
+        <td><em>Ground Truth Oracle</em></td>
+        <td colspan="4" style="text-align:center;color:var(--muted)">上界参考</td>
+        <td><em>46.1 / 64.8</em></td>
+      </tr>
+    </table>
+    <p style="font-size:14px;color:var(--muted)">闭源基线：Qwen3-VL 冻结 6.0% TSR / 26.2% CSR；GPT-5.4 8.7% TSR / 30.5% CSR——"Closed-source agents transfer poorly to robotic memory-intensive tasks"。</p>
+
+    <h3>真实世界结果（Table 4）</h3>
+    <table>
+      <tr>
+        <th>方法</th>
+        <th>Pour×2</th>
+        <th>Brush</th>
+        <th>Transfer</th>
+        <th>Shell Game</th>
+        <th>IHMB</th>
+        <th>Avg</th>
+      </tr>
+      <tr><td>π₀.₅</td><td>20%</td><td>10%</td><td>60%</td><td>10%</td><td>0%</td><td>20%</td></tr>
+      <tr><td>MemER</td><td>30%</td><td>50%</td><td>80%</td><td>40%</td><td>0%</td><td>40%</td></tr>
+      <tr>
+        <td class="good"><strong>PrediMem</strong></td>
+        <td class="good"><strong>60%</strong></td>
+        <td class="good"><strong>60%</strong></td>
+        <td class="good"><strong>80%</strong></td>
+        <td class="good"><strong>50%</strong></td>
+        <td class="good"><strong>10%</strong></td>
+        <td class="good"><strong>52%</strong></td>
+      </tr>
+    </table>
+    <p>IHMB（Imitate Human to Make Breakfast）是时长约 3 分钟的最长任务，<strong>仅 PrediMem 成功完成</strong>。相比 reactive baseline，PrediMem 平均提升真实世界性能 32 个百分点。</p>
+
+    <figure>
+      <img src="img/realworld.webp" alt="真实世界任务演示">
+      <figcaption><strong>Figure S2.</strong> 真实世界任务演示。展示双臂机器人平台上各任务的代表性执行帧，涵盖 Pour Bottle × 2、Brush Plates with Swap、Transfer Objects、Shell Game 与 Imitate Human to Make Breakfast 五类场景。</figcaption>
+    </figure>
+
+    <h3>消融实验</h3>
+    <figure>
+      <img src="img/ablation.webp" alt="记忆行为分析">
+      <figcaption><strong>Figure 4.</strong> 记忆行为分析。(a) recent-buffer 大小对平均 CSR 的敏感性（3–5 帧最优）；(b) keyframe-bank 容量影响（不设上限性能最佳）；(c) t-SNE 可视化显示 predictive coding 产生更紧凑、更具判别性的 keyframe cluster。</figcaption>
+    </figure>
+
+    <table>
+      <tr><th>消融变体</th><th>TSR (%)</th><th>CSR (%)</th></tr>
+      <tr><td>w/o Predictive Coding</td><td>32.3</td><td>49.0</td></tr>
+      <tr><td>w/o Keyframe Bank</td><td>17.7</td><td>41.6</td></tr>
+      <tr><td class="good"><strong>PrediMem（完整）</strong></td><td class="good"><strong>38.5</strong></td><td class="good"><strong>55.2</strong></td></tr>
+    </table>
+    <p>Predictive coding 单独贡献约 +6.2% TSR；keyframe bank 对记忆依赖任务（尤其是 Occlusion 类）至关重要，移除后 TSR 下降 20.8 个百分点。</p>
+
+    <h3>规模扩展实验</h3>
+    <table>
+      <tr><th>S2 模型规模</th><th>TSR (%)</th><th>CSR (%)</th></tr>
+      <tr><td>Qwen3-1.7B</td><td>19.9</td><td>41.4</td></tr>
+      <tr><td>Qwen3-4B</td><td>31.9</td><td>51.7</td></tr>
+      <tr><td class="good"><strong>Qwen3-8B（完整）</strong></td><td class="good"><strong>38.5</strong></td><td class="good"><strong>55.2</strong></td></tr>
+    </table>
+    <p>S2 模型规模从 1.7B 扩展至 8B，性能在所有任务类别上<strong>一致提升</strong>，符合 scaling law 预期。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性 / Limitations</h2>
+    <div class="note"><b>Note:</b> 以下局限性部分来自论文明确陈述（stated），部分由设计本身推断（inferred）。</div>
+
+    <details class="lim" open>
+      <summary>闭源 VLM 在机器人任务上的迁移鸿沟（stated）</summary>
+      <p>Qwen3-VL 冻结（6.0% TSR）与 GPT-5.4（8.7% TSR）等闭源大模型尽管具备强大的通用能力，但在记忆密集型机器人操作任务上表现远不如开源微调方案，说明通用视觉-语言能力与具身记忆能力之间存在显著差距。</p>
+    </details>
+
+    <details class="lim">
+      <summary>真实世界评估规模有限（stated）</summary>
+      <p>真实世界评估仅覆盖 5 项任务，使用双臂平台，尚无法充分代表真实部署场景的多样性。IHMB 任务成功率仅 10%，说明长时域真实操作仍是开放挑战。</p>
+    </details>
+
+    <details class="lim">
+      <summary>专注桌面操作，泛化性待验证（stated + inferred）</summary>
+      <p>当前基准与模型均聚焦于 tabletop manipulation，尚未验证能否泛化至移动操作（mobile manipulation）或更复杂的开放世界场景。此外，数据集由仿真自动生成，仿真到现实的 visual gap 可能影响策略在真实世界的泛化。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    摘自论文原文及图表 · 仅供学习参考<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2605.10921">https://arxiv.org/abs/2605.10921</a> ·
+    项目主页: <a href="https://robomemarena.github.io">robomemarena.github.io</a><br>
+    代码: <a href="https://github.com/OpenHelix-Team/RoboMemArena">github.com/OpenHelix-Team/RoboMemArena</a> ·
+    数据集: <a href="https://huggingface.co/datasets/RoboMemArenaBenchmark/RoboMemArena">HuggingFace</a>
+  </div>
+</footer>
+
+</body>
+</html>

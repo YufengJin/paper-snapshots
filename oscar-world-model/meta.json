@@ -1,0 +1,20 @@
+{
+  "slug": "oscar-world-model",
+  "title": "OSCAR: Omni-Embodiment Action-Conditioned World Model for Robotics",
+  "arxiv_id": "2606.04463",
+  "url": "https://arxiv.org/abs/2606.04463",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "world model",
+    "action-conditioned video generation",
+    "cross-embodiment",
+    "skeleton rendering",
+    "policy evaluation",
+    "diffusion transformer",
+    "机器人策略评估",
+    "RoboArena"
+  ],
+  "summary_zh": "OSCAR 是一个跨机器人形态的动作条件视频世界模型，以 2D 运动骨骼渲染为统一条件表示，在大规模多源数据集（含四种机器人形态与人体手部数据，共 180K 条清洗片段）上微调 Cosmos-Predict2.5-2B，在动作跟随、外观质量和运动一致性上全面超越参数量大数倍的基线，并在 RoboArena 上实现与真实世界策略评估的强相关（Pearson r=+0.852）。",
+  "date": "2026-06-17",
+  "source": "pdf"
+}

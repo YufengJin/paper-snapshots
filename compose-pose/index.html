@@ -12,14 +12,14 @@
 <meta name="description" content="ComPose 将点云补全与物体姿态估计统一在单一网络中，通过关键点渐进补全和几何关系一致性约束，在 REAL275 depth-only 设置下以 38.4 FPS 实现 77.8% 的 10°2cm 精度，较 AG-Pose 提升 9.3%。">
 <style>
   :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
-    --acc:#fb5d00; --acc2:#fb5d00; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
     font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .wrap{max-width:980px;margin:0 auto;padding:0 22px}
   header{padding:56px 0 38px;border-bottom:1px solid var(--line);
-    background:radial-gradient(1200px 400px at 50% -120px,rgba(251,93,0,.06),transparent)}
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
   .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
   .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
@@ -240,7 +240,7 @@
       <tr><td>HS-Pose [44]</td><td>✗</td><td>82.1</td><td>74.7</td><td>46.5</td><td>55.2</td><td>68.6</td><td>82.7</td></tr>
       <tr><td>Query6DoF [37]</td><td>✗</td><td>82.5</td><td>76.1</td><td>49.0</td><td>58.9</td><td>68.7</td><td>83.0</td></tr>
       <tr><td>AG-Pose* [15]</td><td>✗</td><td>83.2</td><td>75.6</td><td>48.8</td><td>58.8</td><td>68.5</td><td>80.8</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>ComPose（本文）</strong></td><td>✗</td>
         <td>82.1</td><td class="good">77.0</td>
         <td class="good">55.6</td><td class="good">61.3</td>
@@ -260,7 +260,7 @@
       <tr><td>AG-Pose [15]</td><td>✗</td><td>84.1</td><td>80.1</td><td>57.0</td><td>64.6</td><td>75.1</td><td>84.7</td></tr>
       <tr><td>SpotPose [29]</td><td>✗</td><td>84.1</td><td>81.2</td><td>59.7</td><td>64.8</td><td>81.5</td><td>88.2</td></tr>
       <tr><td>CleanPose [16]</td><td>✗</td><td>—</td><td>—</td><td>61.5</td><td>67.4</td><td>78.3</td><td>86.2</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>ComPose（本文）</strong></td><td>✗</td>
         <td>84.0</td><td class="good">81.4</td>
         <td class="good">62.1</td><td class="good">68.0</td>
@@ -276,14 +276,14 @@
         <th>5°2cm</th><th>5°5cm</th><th>10°2cm</th><th>10°5cm</th>
       </tr>
       <tr><td>AG-Pose* [15]</td><td>D-only</td><td>81.4</td><td>59.9</td><td>9.7</td><td>10.6</td><td>25.9</td><td>29.7</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>ComPose</strong></td><td>D-only</td>
         <td>81.6</td><td class="good">65.1</td><td class="good">11.8</td><td class="good">12.7</td>
         <td class="good">34.8</td><td class="good">38.9</td>
       </tr>
       <tr><td>GCE-Pose [10]</td><td>RGB-D</td><td>—</td><td>79.2</td><td>24.8</td><td>25.7</td><td>55.4</td><td>58.4</td></tr>
       <tr><td>AG-Pose [15]</td><td>RGB-D</td><td>88.1</td><td>76.9</td><td>21.3</td><td>22.1</td><td>51.3</td><td>54.3</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>ComPose</strong></td><td>RGB-D</td>
         <td class="good">90.3</td><td class="good">80.6</td><td class="good">25.8</td><td class="good">27.6</td>
         <td class="good">57.8</td><td class="good">61.5</td>
@@ -322,10 +322,10 @@
       <tr><td>SPD [31]</td><td>RGB-D</td><td>✓</td><td>8.89</td><td>—</td></tr>
       <tr><td>SGPA [1]</td><td>RGB-D</td><td>✓</td><td>5.51</td><td>—</td></tr>
       <tr><td>DR-Pose [45]</td><td>D</td><td>✓</td><td>5.26</td><td>—</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>ComPose</strong></td><td>RGB-D</td><td>✗</td><td class="good">4.20</td><td class="good">0.17</td>
       </tr>
-      <tr style="background:rgba(251,93,0,.03)">
+      <tr style="background:rgba(90,89,83,.03)">
         <td><strong>ComPose</strong></td><td>D</td><td>✗</td><td>6.09</td><td>0.23</td>
       </tr>
     </table>
@@ -338,8 +338,8 @@
       <tr><td>AG-Pose* [15]</td><td>✓</td><td>37.1</td><td>49.1</td><td>54.3</td><td>72.6</td></tr>
       <tr><td style="color:var(--muted)">AG-Pose 下降幅度</td><td></td><td>24.0%</td><td>16.5%</td><td>20.7%</td><td>10.1%</td></tr>
       <tr><td>ComPose</td><td>×</td><td>55.6</td><td>61.3</td><td>77.8</td><td>85.0</td></tr>
-      <tr style="background:rgba(251,93,0,.04)"><td><strong>ComPose</strong></td><td>✓</td><td>42.7</td><td>53.6</td><td>62.9</td><td>77.7</td></tr>
-      <tr style="background:rgba(251,93,0,.03)"><td style="color:var(--acc2)">ComPose 下降幅度</td><td></td>
+      <tr style="background:rgba(90,89,83,.04)"><td><strong>ComPose</strong></td><td>✓</td><td>42.7</td><td>53.6</td><td>62.9</td><td>77.7</td></tr>
+      <tr style="background:rgba(90,89,83,.03)"><td style="color:var(--acc2)">ComPose 下降幅度</td><td></td>
         <td class="good">23.2%</td><td class="good">12.6%</td><td class="good">19.2%</td><td class="good">8.6%</td>
       </tr>
     </table>

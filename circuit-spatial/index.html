@@ -11,14 +11,14 @@
 <meta name="keywords" content="mechanistic interpretability, Diffusion Transformer, spatial relation generation, attention circuit, text-to-image generation, 文生图, 电路机制, cross-attention, contextual embedding, PixArt">
 <style>
   :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
-    --acc:#fb5d00; --acc2:#fb5d00; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
     font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .wrap{max-width:980px;margin:0 auto;padding:0 22px}
   header{padding:56px 0 38px;border-bottom:1px solid var(--line);
-    background:radial-gradient(1200px 400px at 50% -120px,rgba(251,93,0,.06),transparent)}
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
   .langbar{display:flex;justify-content:flex-end;gap:8px;padding-top:14px}
   .langbar a{font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 14px;background:var(--chip)}
   .langbar a.on{color:var(--acc);border-color:var(--acc)}
@@ -290,7 +290,7 @@
         <td>—</td>
       </tr>
     </table>
-    <p class="note" style="background:rgba(251,93,0,.04);border-left-color:var(--acc);color:#3a3833;">
+    <p class="note" style="background:rgba(90,89,83,.04);border-left-color:var(--acc);color:#3a3833;">
       <b>注：</b>RTE 无位置编码时空间准确率崩溃至 20.7%，证明位置信息对空间关系生成是<em>必要条件</em>。
       DiT-nano（3 层）空间准确率仅 5%，说明模型容量达到阈值以下时电路无法形成。
     </p>

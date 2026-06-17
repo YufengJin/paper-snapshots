@@ -11,14 +11,14 @@
 <meta name="keywords" content="单视图人体重建, 3D human reconstruction, 2D-3D联合生成, 扩散模型同步, 多视图一致性, Flow Matching, FlexiCubes, DINOv2特征, 着装人体, cross-space synchronization attention">
 <style>
   :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
-    --acc:#fb5d00; --acc2:#fb5d00; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
     font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .wrap{max-width:980px;margin:0 auto;padding:0 22px}
   header{padding:56px 0 38px;border-bottom:1px solid var(--line);
-    background:radial-gradient(1200px 400px at 50% -120px,rgba(251,93,0,.06),transparent)}
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
   .langbar{display:flex;justify-content:flex-end;gap:8px;padding-top:14px}
   .langbar a{font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 14px;background:var(--chip)}
   .langbar a.on{color:var(--acc);border-color:var(--acc)}
@@ -213,7 +213,7 @@
       <tr><td>Human3Diff</td><td>1.5034</td><td>1.4219</td><td>0.7468</td><td>19.7181</td><td>0.8065</td><td>0.1334</td></tr>
       <tr><td>PSHuman</td><td>1.4377</td><td>1.1385</td><td>0.8393</td><td>20.8405</td><td>0.8523</td><td>0.0980</td></tr>
       <tr><td>Trellis</td><td>2.0043</td><td>1.5053</td><td>0.7718</td><td>17.0786</td><td>0.7238</td><td>0.1529</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>SyncHuman（Ours）</strong></td>
         <td class="good">0.8353</td>
         <td class="good">0.7593</td>
@@ -247,7 +247,7 @@
       <tr><td>Trellis（微调）</td><td>20.344</td><td>0.844</td><td>0.101</td><td>1.135</td><td>1.041</td></tr>
       <tr><td>PSHuman</td><td>20.840</td><td>0.852</td><td>0.098</td><td>1.438</td><td>1.138</td></tr>
       <tr><td>原始解码器（微调）</td><td>21.362</td><td>0.866</td><td>0.090</td><td>0.887</td><td>0.810</td></tr>
-      <tr style="background:rgba(251,93,0,.04)">
+      <tr style="background:rgba(90,89,83,.04)">
         <td><strong>完整 SyncHuman</strong></td>
         <td class="good">21.838</td>
         <td class="good">0.874</td>

@@ -12,14 +12,14 @@
 <meta name="description" content="UF-OPS 利用策略自身的成功/失败 rollout 训练轻量级 verifier，在执行时将冻结的 base policy 引导向更可能成功的动作，无需修改策略参数，在 5 个真实任务上平均提升成功率 49%。">
 <style>
   :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
-    --acc:#fb5d00; --acc2:#fb5d00; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
     font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .wrap{max-width:980px;margin:0 auto;padding:0 22px}
   header{padding:56px 0 38px;border-bottom:1px solid var(--line);
-    background:radial-gradient(1200px 400px at 50% -120px,rgba(251,93,0,.06),transparent)}
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
   .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
   .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);

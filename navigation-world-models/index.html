@@ -4,7 +4,7 @@
   Fill every {{PLACEHOLDER}} and the section bodies. Reference figures as img/<name>.png.
   Body text in 中文; keep academic terms / names / metrics / quoted phrases in English.
   REQUIRED: <meta name="keywords"> + visible .kw chips + arXiv link (header & footer).
-  Accent color: change --acc to re-theme (e.g. #6ea8fe blue, #4fd1c5 teal, #f59e0b amber).
+  Accent color: change --acc to re-theme (e.g. #fb5d00 blue, #fb5d00 teal, #b45309 amber).
 -->
 <html lang="zh">
 <head>
@@ -14,15 +14,15 @@
 <meta name="keywords" content="导航世界模型, world model, 视觉导航, video generation, diffusion transformer, robot navigation, 轨迹规划, egocentric video">
 <meta name="description" content="NWM：一个基于条件扩散 Transformer（CDiT）的可控视频生成模型，通过想象未来轨迹实现视觉导航规划，支持动态约束融入。">
 <style>
-  :root{ --bg:#0e1116; --panel:#161b22; --panel2:#1c2230; --ink:#e6edf3; --muted:#9aa7b4;
-    --acc:#6ea8fe; --acc2:#7ee787; --warn:#ffb454; --line:#283040; --chip:#222b3a; }
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#fb5d00; --acc2:#fb5d00; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
     font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
   .wrap{max-width:980px;margin:0 auto;padding:0 22px}
   header{padding:56px 0 38px;border-bottom:1px solid var(--line);
-    background:radial-gradient(1200px 400px at 50% -120px,rgba(110,168,254,.18),transparent)}
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(251,93,0,.06),transparent)}
   .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
   .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
@@ -30,17 +30,17 @@
   h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
   .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
   .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
-  .lead{font-size:18.5px;color:#d6dee6}
+  .lead{font-size:18.5px;color:#3a3833}
   .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
   .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
-  nav{position:sticky;top:0;z-index:20;background:rgba(14,17,22,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
   nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
   nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
   nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
   section{padding:46px 0;border-bottom:1px solid var(--line)}
   h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
   h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
-  h3{font-size:20px;margin:30px 0 8px;color:#cdd9e5}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
   .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
   @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
   .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
@@ -53,13 +53,13 @@
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
   ul{padding-left:22px}li{margin:7px 0}
   table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
-  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#cdd9e5}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
   td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
-  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#cdd9e5;font-style:italic}
-  .note{background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.3);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#f0e2cf}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
   .note b{color:var(--warn)}
   .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
-  .lim summary{cursor:pointer;font-weight:600;color:#cdd9e5;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
   .lim summary::-webkit-details-marker{display:none}
   .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
   .lim p{color:var(--muted);margin-top:0}

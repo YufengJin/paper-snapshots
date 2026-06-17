@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+  PAPER POSTER TEMPLATE — self-contained, no dependencies. 中文海报，无 EN 版本。
+  Fill every {{PLACEHOLDER}} and the section bodies. Reference figures as img/<name>.png.
+  Body text in 中文; keep academic terms / names / metrics / quoted phrases in English.
+  REQUIRED: <meta name="keywords"> + visible .kw chips + arXiv link (header & footer).
+  Accent color: change --acc to re-theme (e.g. #5a5953 blue, #5a5953 teal, #b45309 amber).
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{PAPER_TITLE}}</title>
+<meta name="keywords" content="{{KW1}}, {{KW2}}, {{KW3}}, {{KW4}}, {{KW5}}, {{KW6}}">
+<meta name="description" content="{{ONE_LINE_ZH_SUMMARY}}">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">{{VENUE_OR_TOPIC}}</span>
+    <h1>{{PAPER_TITLE}}</h1>
+    <div class="sub">{{ONE_LINE_TAGLINE_ZH}}</div>
+    <div class="authors">{{AUTHORS_AND_AFFILIATION}}</div>
+    <p class="lead">{{TLDR_PARAGRAPH_ZH — 2-3 句中文概述}}</p>
+    <div class="meta">
+      <span>{{META_1}}</span><span>{{META_2}}</span><span>{{META_3}}</span>
+      <!-- REQUIRED: link back to the source paper. Prefer arXiv abs. Keep the footer link too. -->
+      <span><a href="https://arxiv.org/abs/{{ARXIV_ID}}">📄 arXiv:{{ARXIV_ID}}</a></span>
+      <span><a href="{{PROJECT_OR_PDF_URL}}">{{LINK_LABEL — e.g. Project page / PDF}}</a></span>
+    </div>
+    <!-- REQUIRED: 6-10 search keywords (mixed 中英 academic terms); mirror in <meta name=keywords> -->
+    <div class="kw"><span>{{KW1}}</span><span>{{KW2}}</span><span>{{KW3}}</span><span>{{KW4}}</span><span>{{KW5}}</span><span>{{KW6}}</span></div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · Motivation</a>
+  <a href="#method">2 · Method</a>
+  <a href="#exp">3 · Experiments</a>
+  <a href="#limit">4 · Limitations</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> Motivation</h2>
+    <p class="lead">{{What problem? Why do prior approaches fall short? Quote the paper's framing.}}</p>
+    <blockquote>{{The paper's core research question or thesis, quoted.}}</blockquote>
+    <figure>
+      <img src="img/{{teaser}}.png" alt="teaser">
+      <figcaption>{{Teaser / key-result figure caption.}}</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>{{NUM}}</b><small>{{headline result}}</small></div>
+      <div><b>{{NUM}}</b><small>{{headline result}}</small></div>
+      <div><b>{{NUM}}</b><small>{{headline result}}</small></div>
+      <div><b>{{NUM}}</b><small>{{headline result}}</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> Method</h2>
+    <p class="lead">{{One-paragraph overview of the approach.}}</p>
+    <figure>
+      <img src="img/{{architecture}}.png" alt="architecture">
+      <figcaption>{{Architecture figure caption — walk through the pipeline.}}</figcaption>
+    </figure>
+    <h3>{{Key component 1}}</h3>
+    <p>{{Explain it; quote the mechanism.}}</p>
+    <h3>{{Key component 2}}</h3>
+    <p>{{Explain it.}}</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> Experiments</h2>
+    <p class="lead">{{Setup: datasets, baselines, metrics, compute.}}</p>
+    <table>
+      <tr><th>Benchmark</th><th>Prev. best</th><th>This paper</th><th>Δ</th></tr>
+      <tr><td>{{name}}</td><td>{{x}}</td><td class="good">{{y}}</td><td>{{+z%}}</td></tr>
+    </table>
+    <figure><img src="img/{{qualitative}}.png" alt="qualitative"><figcaption>{{Qualitative results caption.}}</figcaption></figure>
+    <h3>Ablations</h3>
+    <p>{{What the ablations show — quote the takeaways.}}</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> Limitations</h2>
+    <!-- If the paper has NO explicit limitations section, keep this note and label each item. -->
+    <div class="note"><b>Note:</b> {{Whether these are stated by the authors or inferred from the design.}}</div>
+    <details class="lim" open><summary>{{Limitation 1}}</summary><p>{{Detail; quote if stated.}}</p></details>
+    <details class="lim"><summary>{{Limitation 2}}</summary><p>{{Detail.}}</p></details>
+    <details class="lim"><summary>{{Limitation 3}}</summary><p>{{Detail.}}</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · {{PAPER_TITLE}} · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/{{ARXIV_ID}}">https://arxiv.org/abs/{{ARXIV_ID}}</a>
+  </div>
+</footer>
+
+</body>
+</html>

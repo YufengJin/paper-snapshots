@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!--
+  Paper poster — self-contained, no dependencies. 中文海报，无 EN 版本。
+  Flow-GRPO: Training Flow Matching Models via Online RL
+  arXiv: 2505.05470 | NeurIPS 2025
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow-GRPO：通过在线强化学习训练 Flow Matching 模型</title>
+<meta name="keywords" content="flow matching, GRPO, reinforcement learning, text-to-image, ODE-to-SDE, reward hacking, 在线强化学习, 图像生成对齐">
+<meta name="description" content="Flow-GRPO 将在线策略梯度强化学习引入 Flow Matching 模型，通过 ODE-to-SDE 转换与 Denoising Reduction 策略，大幅提升文本到图像生成的组合准确率与文字渲染能力，同时几乎无 reward hacking。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:40px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">NeurIPS 2025 · 生成模型 · Generative Models</span>
+    <h1>Flow-GRPO：通过在线强化学习训练 Flow Matching 模型</h1>
+    <div class="sub">首个将在线策略梯度 RL 引入 Flow Matching 的方法，大幅提升 T2I 组合生成与文字渲染能力</div>
+    <div class="authors">Jie Liu*, Gongye Liu*, Jiajun Liang, Yangguang Li, Jiaheng Liu, Xintao Wang, Pengfei Wan, Di Zhang, Wanli Ouyang† &nbsp;|&nbsp; MMlab CUHK · Tsinghua · Kling Team Kuaishou · Nanjing Univ. · Shanghai AI Lab</div>
+    <p class="lead">Flow-GRPO 将 GRPO（Group Relative Policy Optimization）引入 flow matching 生成模型。通过两项核心策略——ODE-to-SDE 转换（保持边缘分布不变的随机化）和 Denoising Reduction（训练时减少去噪步数）——实现了高效的在线 RL 训练，在组合图像生成（GenEval 63%→95%）、视觉文字渲染（59%→92%）和人类偏好对齐上均取得显著提升，且几乎无 reward hacking。</p>
+    <div class="meta">
+      <span>NeurIPS 2025</span>
+      <span>文本到图像 · T2I</span>
+      <span>SD3.5-Medium 骨干</span>
+      <span><a href="https://arxiv.org/abs/2505.05470">📄 arXiv:2505.05470</a></span>
+      <span><a href="https://github.com/yifan123/flow_grpo">GitHub 代码</a></span>
+    </div>
+    <div class="kw">
+      <span>flow matching</span>
+      <span>GRPO</span>
+      <span>在线强化学习</span>
+      <span>ODE-to-SDE</span>
+      <span>reward hacking</span>
+      <span>文本到图像生成</span>
+      <span>Denoising Reduction</span>
+      <span>组合图像生成</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机（Motivation）</h2>
+    <p class="lead">Flow matching 模型（如 SD3.5、FLUX）在图像生成上表现出色，但在多对象组合、属性绑定和文字渲染等复杂场景下仍有明显短板。在线强化学习（online RL）已被证明能显著提升大语言模型的推理能力，然而将其应用于 flow matching 模型面临两大根本挑战。</p>
+    <blockquote>
+      "This need for stochasticity in RL conflicts with the deterministic nature of flow matching models." — Flow matching 依赖确定性 ODE 采样，无法直接支持 RL 所需的随机探索；同时 flow model 推理需要大量去噪步数，数据收集代价极高。
+    </blockquote>
+    <figure>
+      <img src="img/teaser.webp" alt="Flow-GRPO GenEval性能曲线与图像质量对比">
+      <figcaption><strong>Figure 1.</strong>（左）GenEval 分数随训练时间稳步提升，最终以 0.95 超越 GPT-4o（0.84）。（右）DrawBench 图像质量指标（Aesthetic、DeQA）在训练后基本保持不变，Preference Score 上升。结果表明 Flow-GRPO 在提升目标能力的同时几乎无图像质量或多样性损失。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>95%</b><small>GenEval Overall（SD3.5-M + Flow-GRPO），超越 GPT-4o 的 84%</small></div>
+      <div><b>63%→95%</b><small>组合图像生成准确率提升幅度</small></div>
+      <div><b>59%→92%</b><small>视觉文字渲染（OCR）准确率提升幅度</small></div>
+      <div><b>4×</b><small>Denoising Reduction 带来的训练采样加速比</small></div>
+    </div>
+    <h3>核心挑战</h3>
+    <ul>
+      <li><strong>确定性 vs. 随机性：</strong>RL 需要通过随机采样探索动作空间，而 flow matching 使用确定性 ODE，无法直接进行统计采样，policy ratio（Eq. 5 中的 r_t）在 deterministic 动态下计算代价极高。</li>
+      <li><strong>采样效率瓶颈：</strong>Flow model 推理默认需要 T=40 个去噪步骤，在线 RL 每次收集训练数据都需完整运行，GPU 小时消耗极大，限制了实用性。</li>
+      <li><strong>Reward Hacking 风险：</strong>奖励模型可能被"钻空子"——奖励分数上涨而图像质量或多样性下降，这在 T2I 任务中尤为需要防范。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法（Method）</h2>
+    <p class="lead">Flow-GRPO 将 GRPO 扩展到 flow matching 模型，核心包含两项技术创新：（1）ODE-to-SDE 转换，将确定性 ODE 采样转化为保持边缘分布不变的等价 SDE；（2）Denoising Reduction，训练时大幅减少去噪步数以加速数据收集，而推理时保留原始步数以保证质量。</p>
+    <figure>
+      <img src="img/architecture.webp" alt="Flow-GRPO 方法总览图">
+      <figcaption><strong>Figure 2. Flow-GRPO 方法总览。</strong>给定提示词，通过 ODE-to-SDE 策略引入随机性以支持在线 RL；利用 Denoising Reduction（T=10 步）高效采集低质量但信息丰富的轨迹；轨迹对应的奖励送入 GRPO loss，在线更新模型权重，得到对齐后的策略。右侧的 Group Relative Policy Optimization 通过组内相对优势归一化来估计策略梯度，无需额外 value network。</figcaption>
+    </figure>
+
+    <h3>1. Denoising as a Markov Decision Process</h3>
+    <p>Flow matching 的去噪过程被建模为 MDP（S, A, P, R）：状态 s_t = (c, t, x_t)，动作 a_t = x_{t-1}（模型预测的去噪样本），策略 π_θ 由 flow model 参数化。奖励仅在最终时步给出：R(s_T, a_T) = r(x_0, c)。这一 MDP 视角使得策略梯度方法可以直接适用。</p>
+
+    <h3>2. ODE-to-SDE 转换（实现随机性）</h3>
+    <p>原始 flow matching 使用确定性 ODE（dx_t = v_t dt），无法满足 RL 的随机采样需求。Flow-GRPO 将其转换为等价的反向时间 SDE：</p>
+    <blockquote>
+      dx_t = [v_θ(x_t) + (σ_t²/2t)(x_t + (1-t)v_θ(x_t))] dt + σ_t dw
+    </blockquote>
+    <p>其中 σ_t = a√(t/(1-t))，a 为控制随机程度的超参数。经 Euler-Maruyama 离散化后，策略 π_θ(x_{t-1} | x_t, c) 成为各向同性高斯分布，可以闭式计算 KL 散度，无需额外打分网络。关键数学保证：<strong>此 SDE 与原 ODE 在每个时间步的边缘分布完全相同</strong>，即转换不改变模型的生成分布。</p>
+
+    <h3>3. GRPO 目标函数</h3>
+    <p>GRPO 无需 critic/value network，通过组内相对归一化来估计优势：对每个提示词 c，采样 G 张图像，优势 Â_i = (R_i − mean(R)) / std(R)。训练目标：</p>
+    <blockquote>
+      J_Flow-GRPO = E[f(r, Â, θ, ε, β)]，其中 f 包含 clip 截断的 PPO-style 比率项与 KL 正则项 −β·D_KL(π_θ ‖ π_ref)
+    </blockquote>
+    <p>KL 惩罚是防止 reward hacking 的关键：它将模型约束在预训练权重附近，从而保留图像质量和多样性。</p>
+
+    <h3>4. Denoising Reduction（训练加速）</h3>
+    <p>在线 RL 训练时，每次采集样本需运行完整去噪链，成本高昂。实验发现：<strong>将训练时去噪步数从 T=40 减少到 T=10，可获得超过 4× 的采样加速，而最终奖励和图像质量不受影响</strong>。推理时仍使用 T=40，保持生成质量。进一步减少至 T=5 则不一致地降低训练效率。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验（Experiments）</h2>
+    <p class="lead">在三类任务上评估 Flow-GRPO：（1）组合图像生成（GenEval benchmark）；（2）视觉文字渲染（OCR 准确率）；（3）人类偏好对齐（PickScore）。骨干模型为 Stable Diffusion 3.5-Medium（SD3.5-M）。图像质量通过 DrawBench 上的 Aesthetic Score、DeQA、ImageReward 和 UnifiedReward 独立评估以检测 reward hacking。</p>
+
+    <h3>GenEval 基准（组合图像生成）</h3>
+    <table>
+      <tr><th>模型</th><th>Overall</th><th>Single Obj.</th><th>Two Obj.</th><th>Counting</th><th>Colors</th><th>Position</th><th>Attr. Binding</th></tr>
+      <tr><td>FLUX.1 Dev</td><td>0.66</td><td>0.98</td><td>0.81</td><td>0.74</td><td>0.79</td><td>0.22</td><td>0.45</td></tr>
+      <tr><td>GPT-4o</td><td>0.84</td><td>0.99</td><td>0.92</td><td>0.85</td><td>0.92</td><td>0.75</td><td>0.61</td></tr>
+      <tr><td>SD3.5-M（基线）</td><td>0.63</td><td>0.98</td><td>0.78</td><td>0.50</td><td>0.81</td><td>0.24</td><td>0.52</td></tr>
+      <tr><td class="good"><strong>SD3.5-M + Flow-GRPO</strong></td><td class="good">0.95</td><td class="good">1.00</td><td class="good">0.99</td><td class="good">0.95</td><td class="good">0.92</td><td class="good">0.99</td><td class="good">0.86</td></tr>
+    </table>
+
+    <h3>视觉文字渲染与人类偏好结果（Table 2）</h3>
+    <table>
+      <tr><th>模型</th><th>GenEval</th><th>OCR Acc.</th><th>PickScore</th><th>Aesthetic</th><th>DeQA</th><th>ImgRwd</th><th>UniRwd</th></tr>
+      <tr><td>SD3.5-M</td><td>0.63</td><td>0.59</td><td>21.72</td><td>5.39</td><td>4.07</td><td>0.87</td><td>3.33</td></tr>
+      <tr><td>Flow-GRPO w/o KL（GenEval）</td><td>0.95</td><td>—</td><td>—</td><td>4.93</td><td>2.77</td><td>0.44</td><td>2.94</td></tr>
+      <tr><td class="good">Flow-GRPO w/ KL（GenEval）</td><td class="good">0.95</td><td>—</td><td>—</td><td class="good">5.25</td><td class="good">4.01</td><td class="good">1.03</td><td class="good">3.51</td></tr>
+      <tr><td class="good">Flow-GRPO w/ KL（OCR）</td><td>—</td><td class="good">0.92</td><td>—</td><td>5.32</td><td>4.06</td><td>0.95</td><td>3.42</td></tr>
+      <tr><td class="good">Flow-GRPO w/ KL（PickScore）</td><td>—</td><td>—</td><td class="good">23.31</td><td>5.92</td><td>4.22</td><td>1.28</td><td>3.66</td></tr>
+    </table>
+    <p>注：<strong>不加 KL 正则时（w/o KL），Aesthetic Score 从 5.39 降至 4.93，DeQA 从 4.07 降至 2.77</strong>，出现明显 reward hacking（图像质量下降）。加入 KL 后质量指标几乎与基线持平。</p>
+
+    <figure>
+      <img src="img/qualitative.webp" alt="GenEval 定性对比">
+      <figcaption><strong>Figure 3. GenEval 定性对比。</strong>在 Counting（四头长颈鹿）、Colors（棕色长颈鹿 + 白色止停牌）、Attribute Binding（红色橙子 + 紫色西蓝花）和 Position（熊右侧的长椅）等任务上，SD3.5-M + Flow-GRPO（最下行）明显优于 FLUX.1 Dev、GPT-4o 和原始 SD3.5-M。</figcaption>
+    </figure>
+
+    <h3>Ablation 分析</h3>
+    <ul>
+      <li><strong>Denoising Reduction：</strong>训练步数从 T=40 减至 T=10，可实现超过 4× 加速，最终性能持平；进一步减至 T=5 不能一致地提速，且有时拖慢训练。</li>
+      <li><strong>噪声水平 a：</strong>a=0.1 时探索不足，训练慢；a=0.7 时 OCR 准确率最高；a=1.0 时图像质量崩溃，奖励归零。推荐 a=0.7。</li>
+      <li><strong>Group Size G：</strong>G=24 时训练稳定；G=12 和 G=6 时训练不稳定甚至崩溃。较小的组产生不准确的优势估计，引发高方差。</li>
+      <li><strong>对比其他对齐方法：</strong>Flow-GRPO 一致超越有监督微调（SFT）、Flow-DPO 的离线与在线变体。</li>
+      <li><strong>泛化性：</strong>在训练于 60 类物体、测试于 20 类未见物体时，Flow-GRPO Overall 0.90 vs. 基线 0.64；训练时计数 2-4 个物体，测试时 5-6 个物体也有显著提升（0.48 vs. 0.13）。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性（Limitations）</h2>
+    <div class="note"><b>注：</b>以下局限性均为论文 "Limitations &amp; Future Work" 小节中作者明确陈述（stated）的内容。</div>
+    <details class="lim" open>
+      <summary>当前仅针对 T2I 任务，视频生成尚未验证</summary>
+      <p>本工作聚焦于文本到图像任务（T2I）。虽然 Flow-GRPO 有潜力扩展到视频生成，但视频场景面临更复杂的多目标奖励设计（物理真实性、时序一致性、平滑度等），目前缺乏实验验证。</p>
+    </details>
+    <details class="lim">
+      <summary>Reward Design 依赖简单规则，高级奖励有待开发</summary>
+      <p>当前奖励函数使用对象检测器、文字识别等规则信号。对于鼓励物理真实性或时序一致性等复杂语义，需要更先进的奖励模型，目前还是挑战。</p>
+    </details>
+    <details class="lim">
+      <summary>视频生成的可扩展性问题</summary>
+      <p>视频生成比 T2I 消耗的资源多得多，将 Flow-GRPO 在视频规模上应用需要更高效的数据收集与训练流水线，目前的工程挑战尚未被解决。</p>
+    </details>
+    <details class="lim">
+      <summary>KL 正则虽有效，但代价是训练时间更长</summary>
+      <p>作者指出：加入 KL 约束可以匹配无 KL 版本的最终高奖励，但需要更长的训练时间。此外，在某些提示词上仍会偶发 reward hacking（如人类偏好任务中视觉多样性的下降）。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · Flow-GRPO: Training Flow Matching Models via Online RL · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2505.05470">https://arxiv.org/abs/2505.05470</a> &nbsp;|&nbsp;
+    Code: <a href="https://github.com/yifan123/flow_grpo">github.com/yifan123/flow_grpo</a>
+  </div>
+</footer>
+
+</body>
+</html>

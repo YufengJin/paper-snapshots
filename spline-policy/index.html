@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--
+  Spline Policy: A Structured Representation for Robot Policies
+  arXiv: 2606.07386 | 中文海报 | paper-snapshots collection
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spline Policy: 机器人策略的结构化表示</title>
+<meta name="keywords" content="Spline Policy, 模仿学习, 运动原语, 样条轨迹, 流场, 机器人操控, imitation learning, movement primitive, flow field, trajectory representation">
+<meta name="description" content="Spline Policy（SP）将机器人策略的动作块输出替换为样条参数，在保持策略主干不变的前提下，赋予策略紧凑轨迹解码、约束处理、不确定性传播和闭环流场执行等结构化能力。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics &nbsp;·&nbsp; cs.RO · Jun 2026</span>
+    <h1>Spline Policy: 机器人策略的结构化表示</h1>
+    <div class="sub">用样条参数替代动作块——在不改变策略主干的前提下，赋予策略连续轨迹、流场与不确定性感知能力</div>
+    <div class="authors">Mengze Tian &nbsp;·&nbsp; Yiming Li &nbsp;·&nbsp; Sichao Liu &nbsp;·&nbsp; Auke Ijspeert &nbsp;·&nbsp; Sylvain Calinon<br>
+      <span style="font-size:13px">EPFL · Idiap Research Institute</span>
+    </div>
+    <p class="lead">现代模仿学习策略通常以固定分辨率的<em>动作块</em>（action chunks）为输出，丧失了轨迹的几何与时序结构。本文提出 <strong>Spline Policy（SP）</strong>：将策略输出替换为样条参数，在保持主干网络不变的同时，使预测对象从离散序列升级为紧凑的连续轨迹，并自然支持多时间分辨率解码、参数空间约束处理、不确定性传播，以及基于解析距离场的闭环流场执行。</p>
+    <div class="meta">
+      <span>arXiv 2606.07386</span>
+      <span>cs.RO</span>
+      <span>2026-06-05</span>
+      <span><a href="https://arxiv.org/abs/2606.07386">论文原文 arXiv:2606.07386</a></span>
+      <span><a href="https://arxiv.org/pdf/2606.07386">PDF</a></span>
+    </div>
+    <div class="kw">
+      <span>Spline Policy</span>
+      <span>模仿学习</span>
+      <span>movement primitive</span>
+      <span>样条轨迹表示</span>
+      <span>flow field</span>
+      <span>不确定性传播</span>
+      <span>机器人操控</span>
+      <span>imitation learning</span>
+      <span>action chunk</span>
+      <span>trajectory representation</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机</h2>
+    <p class="lead">现有的模仿学习策略（ACT、Diffusion Policy、FMP、VLA 等）以固定长度的动作序列（action chunk）为输出。这种设计简洁有效，但缺乏几何连续性、时序结构与控制接口：输出的点序列无法直接表达速度、加速度约束，也无法在参数空间内完成轨迹修正或不确定性量化。</p>
+    <blockquote>
+      "Modern imitation-learning policies for robot manipulation often represent actions as fixed-resolution action chunks, which are simple and effective but expose limited geometric and temporal structure before execution."
+    </blockquote>
+    <figure>
+      <img src="img/overview.webp" alt="Spline Policy overview">
+      <figcaption><strong>图 1：SP 系统概览。</strong> 左上：策略主干不变，输出接口替换为样条参数，经 Spline Layer 解码为连续轨迹。右上：端到端训练直接对样条参数求导，损失可穿透解码层反传至主干。下：同一样条输出既可作为轨迹解码（Trajectory decoding），也可通过样条到流场的变换（Spline-to-Field）用于闭环执行，提供扰动恢复与控制器兼容性。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>4</b><small>支持的策略主干类型<br>（Diffusion / Flow / Transformer / VLA）</small></div>
+      <div><b>6</b><small>仿真操控任务<br>（3 种输入模态）</small></div>
+      <div><b>10/10</b><small>SP-PI05 在 PushT 真实任务<br>成功率</small></div>
+      <div><b>C¹</b><small>样条连续性保证<br>跨 replanning 边界</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法</h2>
+    <p class="lead">SP 的核心思想是<strong>只改变输出接口，不改变感知主干</strong>。给定观测 <code>o</code>，策略主干输出样条参数 <code>w_θ(o)</code>，由拼接样条基函数 φ(t) 解码为连续轨迹 f_{w_θ(o)}(t) = φ(t) w_θ(o)。在此基础上，SP 提供三类结构化操作：轨迹解码、参数空间约束处理，以及不确定性传播。对于二次样条，还可进一步将轨迹转化为基于解析距离场的向量流场（flow field），支持闭环执行。</p>
+
+    <figure>
+      <img src="img/overview.webp" alt="SP architecture and training">
+      <figcaption>策略主干保持感知编码与序列建模能力，Spline Layer 在推理时将样条参数实时解码为任意分辨率轨迹；训练时梯度通过 ∂L_s/∂θ → ∂L_s/∂f_{w_θ} → ∂w_θ/∂θ 链式反传。</figcaption>
+    </figure>
+
+    <h3>结构化轨迹解码（Structured Decoding）</h3>
+    <p>策略输出 K 段拼接二次 Bernstein 样条，每段由 3 个控制点参数化。连续性约束（C⁰、C¹、C²）通过相邻段端点的线性等式约束施加，无需修改网络结构。同一套样条参数可在不同控制频率下解码，解耦了策略学习频率与下游控制器频率。</p>
+
+    <div class="grid2">
+      <figure>
+        <img src="img/boundary-constraint.webp" alt="Boundary constraint visualization">
+        <figcaption><strong>图 2：连续性约束。</strong> 左：无约束；中：C⁰ 连续（位置连接相邻段）；右：C¹ 连续（额外保证速度连续），使重规划时轨迹更平滑。</figcaption>
+      </figure>
+      <figure>
+        <img src="img/uncertainty-propagation.webp" alt="Uncertainty propagation">
+        <figcaption><strong>图 3：不确定性传播。</strong> 观测噪声通过样条参数分布 w_θ(o) ~ N(μ_w, Σ_w) 线性传播到轨迹分布，只需矩阵乘法，无需修改主干或解码器。</figcaption>
+      </figure>
+    </div>
+
+    <h3>流场实现（Flow-Field Realization）</h3>
+    <p>对于二次样条，样条到距离场的解析变换 [文献23] 给出从任意状态 x 到样条的有符号距离 d_θ(x) 及法向量 n_θ(x)。SP 流场由两项叠加构成：</p>
+    <ul>
+      <li><strong>吸引项</strong> v_att(x) = α(x) n_θ(x)：将偏离状态拉回样条曲线（α ≤ 0）。</li>
+      <li><strong>推进项</strong> v_prog(x) = β(x) f̂_θ(x)：沿切线方向推动机器人前进（β ≥ 0）。</li>
+    </ul>
+    <p>可以证明，在正则性与投影假设下，该流场的诱导动力学不增加到样条的距离（Lyapunov 分析见附录 VII-B），终点处切线为零时终点成为吸引子，提供原则上的局部修正机制。</p>
+
+    <h3>控制器集成（Controller Integration）</h3>
+    <p>SP 流场可映射至配置空间：q̇_θ = J^†_ψ(q) F_θ(ψ(q))。当障碍物靠近时，基于机器人有符号距离场 Γ_SDF 的碰撞回避速度 q̇_col 被赋予更高优先级，SP 速度投影至其零空间：q̇_θ,proj = (I − ∇_q Γ^† ∇_q Γ) q̇_θ，最终命令 q̇_action = q̇_col + q̇_θ,proj。全程<strong>无需重训练策略主干</strong>。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验</h2>
+    <p class="lead">实验分三个层次：低维 LASA 基准（分析流场机制）、仿真操控基准（SP 作为轨迹输出接口与动作块基线对比）、以及真实机器人案例研究（展示部署层面的兼容性）。主要使用 Diffusion Policy（DP）和 Flow Matching Policy（FMP）作为对齐主干，对应变体分别标记为 SP-Diff / BL-Diff、SP-Flow / BL-Flow。</p>
+
+    <h3>流场机制：扰动恢复与观测不确定性</h3>
+    <figure>
+      <img src="img/perturbation-recovery.webp" alt="Perturbation recovery and uncertainty">
+      <figcaption><strong>图 8：扰动恢复对比。</strong> 基线模型（Baseline model）在扰动初始状态下轨迹不一致（灰色椭圆高亮区域）；Spline Policy (Flow) 通过状态依赖流场将扰动状态引导回示范轨迹。</figcaption>
+    </figure>
+
+    <p>在 LASA 数据集（Snake、G-Shape、Sine 三种演示）的 25 次扰动实验中，Spline Policy (Flow) 在 Chamfer Distance (CD)、Convergence Error (CE)、Maximum Speed (MS) 三项指标均优于基线与 SP (Traj.)。</p>
+
+    <table>
+      <tr><th>方法</th><th>CD mean [mm]</th><th>CD min [mm]</th><th>CE [mm]</th><th>MS [m/s]</th></tr>
+      <tr><td>Baseline model</td><td>26.2</td><td>3.7</td><td>26.7</td><td>13.0</td></tr>
+      <tr><td>Spline Policy (Traj.) ours</td><td>21.0</td><td>2.2</td><td>28.8</td><td>14.3</td></tr>
+      <tr><td>Spline Policy (Flow) ours</td><td class="good">12.8</td><td class="good">0.8</td><td class="good">1.1</td><td class="good">0.25</td></tr>
+    </table>
+    <p style="font-size:13px;color:var(--muted)">表 I：扰动条件下的定量评估。CD = Chamfer Distance；CE = Convergence Error；MS = Maximum Speed。数据来自论文 Table I。</p>
+
+    <p>在注入高斯观测噪声（σ = 10–40 mm）的实验中，概率变体 Spline Policy (Prob. Traj.) ours 在所有噪声水平下 CD 均最低，Spline Policy (Prob. Flow) ours 次之，均优于基线。具体数值见论文 Table II：σ=10 时 SP(Prob.Traj.) 达 0.7 mm，σ=40 时达 6.1 mm（基线为 20.4 mm）。</p>
+
+    <h3>仿真操控基准（6 任务 × 3 输入模态）</h3>
+    <figure>
+      <img src="img/benchmark-results.webp" alt="Benchmark results bar chart">
+      <figcaption><strong>图 10：仿真基准对比。</strong> SP 在 State / Vision / Point Cloud 三类输入上与 BL-Diff / BL-Flow 对齐主干对比。任务得分基本持平，而 SP 的 Relative FLOPs 降低至 68.1%（State）、86.1%（Vision）、85.4%（Point Cloud），即在<strong>相当性能下网络前向计算量更少</strong>。</figcaption>
+    </figure>
+
+    <p>SP 在六个任务上（Tool Hang、Can、Push-T、Adroit Door、Adroit Pen、Dexart Laptop）的平均得分与基线相当，"consistent effect is the reduction in policy-output dimensionality and measured network-level forward FLOPs"（引自论文），不作为性能均匀提升的主张，而是<em>等效性能下更高效</em>的证据。</p>
+
+    <h3>轨迹连续性（Replanning）</h3>
+    <p>在 Push-T 任务的重规划实验中，Spline Policy (Traj.) 可施加跨 replanning 边界的 C¹ 连续性，使速度曲线平滑；基线动作块在 replanning 边界处出现速度不连续（"Motion Jump"），加速度更剧烈。</p>
+
+    <h3>真实机器人案例（ALOHA 平台）</h3>
+    <figure>
+      <img src="img/realworld.webp" alt="Real-world case studies">
+      <figcaption><strong>图 12：真实机器人兼容性案例。</strong> Row 1：视觉条件规划（视野变化下追踪酒瓶位置）；Row 2：推拉扰动下恢复；Row 3：null-space 碰撞回避（未重训练主干）；Row 4：外部指定样条运动（盛满液体的玻璃杯扰动测试）。</figcaption>
+    </figure>
+
+    <p>真实机器人成功率（Table V，SP-Traj. 不同主干，10 次试验）：</p>
+    <table>
+      <tr><th>任务</th><th>SP-ACT</th><th>SP-Diff</th><th>SP-PI05</th></tr>
+      <tr><td>PushT</td><td>0/10</td><td>6/10</td><td class="good">10/10</td></tr>
+      <tr><td>Toy packing</td><td>5/10</td><td>8/10</td><td class="good">9/10</td></tr>
+    </table>
+    <p style="font-size:13px;color:var(--muted)">注：三种主干（ACT 52M、Diffusion 270M、PI05 VLA 4B）共用 SP 轨迹接口，主干规模差异导致性能差异，非 SP 接口本身对比。数据来自论文 Table V。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性</h2>
+    <div class="note"><b>说明：</b>以下局限性均由作者在论文结论部分（Section VI）明确陈述，标记为 <em>stated</em>。</div>
+
+    <details class="lim" open>
+      <summary>策略主干质量仍是决定因素（stated）</summary>
+      <p>SP 更改的是预测动作对象的表示，而非策略主干。"It does not remove the need for an accurate and expressive policy backbone. If the policy predicts an inappropriate spline, the structured decoder or the induced flow field cannot by itself guarantee task success."（引自原文）</p>
+    </details>
+
+    <details class="lim" open>
+      <summary>流场修正仅为局部保证，不适用于高度不连续任务（stated）</summary>
+      <p>"The distance-to-spline corrective property applies to the generated motion under the assumptions of the analytical construction, not to arbitrary task objectives or arbitrary off-manifold states. SP may also be less suitable for highly discontinuous or dynamic interactions, such as hitting a moving object, where additional task-specific modeling or engineering may be required."（引自原文）</p>
+    </details>
+
+    <details class="lim" open>
+      <summary>解析流场仅限于拼接二次样条（stated）</summary>
+      <p>当前解析距离场与流场构建依赖拼接二次样条的 C⁰/C¹ 连续性。"Extending the construction to broader spline families and evaluating uncertainty-aware or constraint-aware execution policies are important directions for future work."（引自原文）</p>
+    </details>
+
+    <details class="lim">
+      <summary>真实机器人实验非受控对比（stated）</summary>
+      <p>真实机器人实验为兼容性案例研究，"intended as system-level demonstrations of compatibility, rather than controlled comparisons against action-chunk policies"（引自原文）。不同主干的模型规模、预训练、优化器与训练时长均不同，成功率差异不能单独归因于主干架构。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's figures and text · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2606.07386">https://arxiv.org/abs/2606.07386</a>
+  </div>
+</footer>
+
+</body>
+</html>

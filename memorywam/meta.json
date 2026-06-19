@@ -1,0 +1,11 @@
+{
+  "slug": "memorywam",
+  "title": "MemoryWAM: Efficient World Action Modeling with Persistent Memory",
+  "arxiv_id": "2606.20562",
+  "url": "https://arxiv.org/abs/2606.20562",
+  "category": "机器人 · Robotics",
+  "keywords": ["world action model", "hybrid memory", "gist token", "non-Markovian", "机器人操作", "KV cache", "长时序决策", "diffusion transformer", "persistent memory", "RMBench"],
+  "summary_zh": "MemoryWAM 提出混合记忆机制（近期帧 + 事件边界锚帧 + 压缩 gist token），将 WAM 推理复杂度从 O(N) 降至 O(N/d)，在 RMBench 仿真基准及真实双臂机器人任务上超越强 VLA/WAM 基线，同时保持更低推理延迟与显存占用。",
+  "date": "2026-06-19",
+  "source": "arxiv-html"
+}

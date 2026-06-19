@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--
+  PAPER POSTER — 中文海报，无 EN 版本。
+  Qwen-RobotManip Technical Report
+  Source: https://qwen.ai/blog?id=qwen-robotmanip
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen-RobotManip：对齐解锁机器人操作基础模型的规模化</title>
+<meta name="keywords" content="VLA, 机器人操作, cross-embodiment alignment, 数据合成, flow matching, Diffusion Transformer, 迁移泛化, 指令跟随">
+<meta name="description" content="Qwen-RobotManip 提出「先对齐、后扩展」原则，通过统一表示/运动/行为三维对齐框架，在 38,100 小时开源数据上构建可泛化 VLA 基础模型，在多项 OOD 基准上超越 π₀.₅ 等 SOTA。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:38px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · 技术报告 2026</span>
+    <h1>Qwen-RobotManip：对齐解锁机器人操作基础模型的规模化</h1>
+    <div class="sub">Alignment Unlocks Scale for Robotic Manipulation Foundation Models</div>
+    <div class="authors">Qwen Team · 2026年6月</div>
+    <p class="lead">
+      现有 VLA 模型在标准基准上表现良好，但在真正 OOD 场景下严重退化——根本原因在于异构机器人数据无法被直接对齐后统一缩放。Qwen-RobotManip 以「先对齐、后扩展」为核心原则，在表示、运动、行为三个维度引入统一对齐框架，基于 ~38,100 小时全开源数据构建可泛化 VLA 基础模型，在多项 OOD 基准上大幅超越 π₀.₅ 等当前最优方法。
+    </p>
+    <div class="meta">
+      <span>技术报告 · 2026-06-16</span>
+      <span>~38,100 小时预训练数据</span>
+      <span>Qwen3.5-4B 视觉语言主干</span>
+      <span><a href="https://qwen.ai/blog?id=qwen-robotmanip">博客页面</a></span>
+      <span><a href="https://github.com/QwenLM/Qwen-RobotManip">GitHub 代码</a></span>
+    </div>
+    <div class="kw">
+      <span>VLA</span>
+      <span>机器人操作</span>
+      <span>cross-embodiment alignment</span>
+      <span>人机数据合成</span>
+      <span>flow matching</span>
+      <span>Diffusion Transformer</span>
+      <span>迁移泛化</span>
+      <span>指令跟随</span>
+      <span>OOD evaluation</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机</h2>
+    <p class="lead">
+      语言和多模态领域的基础模型因「异构数据来源可在统一公式下对齐，且互联网大量低成本数据允许多样化训练信号相互强化」而实现了强泛化。但机器人操作数据天然异构、昂贵且多样性有限，使得对齐与规模化难以同时实现。
+    </p>
+    <blockquote>
+      「We investigate whether this scaling recipe can be applied to robotic manipulation to achieve genuine generalization.」——对齐是数据规模化的先决条件，而非独立的工程选择。
+    </blockquote>
+
+    <figure>
+      <img src="img/teaser.webp" alt="Qwen-RobotManip 系统概览">
+      <figcaption>
+        <b>图1 系统总览（论文首页图）。</b>
+        左侧：Human-to-Robot 合成流水线将来自 ~1,933 小时自我中心视频的人手演示渲染为 15 种双臂机器人形态（约 24,808 小时合成演示），再与多源真实机器人数据合并，共构成 >38,100 小时预训练语料。
+        中间：统一跨形态对齐——表示对齐（规范状态向量）、运动对齐（相机坐标系 EEF delta 姿态）、行为对齐（系统提示 + 上下文自适应）。
+        右侧：OOD 基准雷达图与数据规模化曲线，显示 Qwen-RobotManip 超越 π₀.₅ 等先前 SOTA，且随数据量增加涌现出 OOD 泛化能力。
+      </figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>~38,100h</b><small>全开源预训练语料（含 H2R 合成）</small></div>
+      <div><b>15</b><small>种双臂机器人形态（人机合成覆盖）</small></div>
+      <div><b>+20%</b><small>RoboChallenge Table30-v1 Generalist Track 相对提升（vs. DM0_generalist）</small></div>
+      <div><b>4</b><small>实体平台验证：AgileX ALOHA、Franka、UR、ARX</small></div>
+    </div>
+
+    <h3>为什么标准基准不够用？</h3>
+    <p>
+      在标准 in-distribution 基准（LIBERO、RoboTwin）上，从零训练的模型（StarVLA、Ours-scratch）可媲美甚至超过大规模预训练模型（π₀、π₀.₅）。这是因为训练与评测共享同一分布，高准确率可通过记忆视觉-行为模式实现，而非真实泛化能力。
+      相比之下，在 OOD 基准（LIBERO-Plus、RoboTwin-Clean2Rand）上，差距显著拉开：π₀.₅ 大幅优于从零训练的模型，随扰动难度上升差距进一步加大。因此 Qwen-RobotManip 以 OOD 评测为首要指标。
+    </p>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法</h2>
+    <p class="lead">
+      Qwen-RobotManip 围绕「对齐优先」原则，在数据、模型、训练三个层面协同设计：统一 80 维规范状态-动作表示、相机坐标系 delta 姿态运动对齐、结构化体态提示与上下文内策略自适应，配合 Human-to-Robot 合成流水线实现大规模多源训练。
+    </p>
+
+    <figure>
+      <img src="img/architecture.webp" alt="Qwen-RobotManip 模型架构">
+      <figcaption>
+        <b>图3 Qwen-RobotManip 模型架构概览。</b>
+        模型耦合 Qwen-VL 主干（Qwen3.5-4B）与 flow-matching Diffusion Transformer (DiT) 动作头。主干联合编码多视角视觉 token、结构化体态提示（Embodied Chain-of-Thought）、历史上下文 token，最后层隐藏态通过交替 cross-attention 注入 DiT。状态与动作共享统一 80 维规范表示，EEF 动作以相机坐标系 delta 姿态表达，条件于相机参数与 end-effector 类型嵌入。VLM 协同训练与 VLA 训练使用独立 batch。
+      </figcaption>
+    </figure>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>表示对齐：统一状态-动作空间</h3>
+        <p>
+          引入 <b>80 维规范向量表示</b>：两个 29 维单臂 block（各含 Joint positions 7d、EEF pose 9d、Gripper state 1d、Dexterous hand joints 12d）+ 22 维预留维度。不同形态（单臂 Franka、双臂 ALOHA、人形机器人）各自填充对应子集，未激活维度通过 per-dimension binary mask 排除在训练损失之外，避免 "幽灵" 监督干扰梯度。
+        </p>
+      </div>
+      <div class="card">
+        <h3>运动对齐：相机坐标系 EEF delta 姿态</h3>
+        <p>
+          不同数据集的 end-effector 姿态在不同坐标系下记录，导致即使是相同物理运动，数值上也可能截然不同。
+          通过将 EEF delta 动作表示为<b>相机坐标系 delta pose</b>（camera-frame delta pose），视觉上相似的运动在动作空间中数值也相近，直接对齐视觉观察空间与动作空间，促进跨形态迁移。
+          同时通过 Camera-aware Positional Encoding (CaPE) 将相机外参注入 DiT cross-attention，使动作头能够推理相机几何关系。
+        </p>
+      </div>
+      <div class="card">
+        <h3>行为对齐：结构化体态提示</h3>
+        <p>
+          每步推断时提供结构化文本提示，字段包括：<code>embodiment</code>（机器人平台标识）、<code>instruction</code>（任务描述）、<code>speed</code>（episode 长度 bin，500 步为单位）、<code>fps</code>（时间采样率）、<code>camera view direction</code>（arm side / opposite side）。为提高对缺失信息的鲁棒性，训练中以 15% 概率随机丢弃 embodiment、speed、fps 字段。
+        </p>
+      </div>
+      <div class="card">
+        <h3>上下文内策略自适应（In-Context）</h3>
+        <p>
+          受大语言模型 in-context learning 启发，Qwen-RobotManip 配备<b>上下文策略自适应机制</b>：将同一 episode 内近期执行历史（observation-action chunk 对）作为结构化上下文 token 序列注入策略，无需更新参数即可在部署时实现行为自适应。采用随机上下文采样（Stochastic context sampling）防止模型退化为简单的"复制近期动作"捷径。
+        </p>
+      </div>
+    </div>
+
+    <h3>Human-to-Robot 数据合成流水线</h3>
+    <p>
+      自我中心人手演示与机器人数据在形态和视觉域之间存在显著差距。合成流水线分两阶段：
+    </p>
+    <ul>
+      <li><b>Action Alignment：</b>将人手关键点（MANO 表示，21 个关节）映射到并联夹爪机器人动作空间，定义虚拟指尖 <code>k_vf = 0.7·k_index + 0.3·k_middle</code>，EEF 位置取拇指与虚拟指尖中点，夹爪宽度为欧氏距离。应用 Savitzky-Golay 滤波平滑轨迹，高斯加权 SLERP 平滑方向。</li>
+      <li><b>Visual Alignment：</b>SAM3 分割人手区域，ProPainter 光流引导修复背景，MuJoCo IK 求解机器人底座位姿，Depth Anything v3 估计场景深度后合成机器人图像。</li>
+    </ul>
+    <p>~1,933 小时自我中心数据渲染为 15 种双臂机器人形态（Panda、UR5e、ARX-L5、xArm7、IIWA、Kinova Gen3 等），共约 <b>24,808 小时</b>合成演示。</p>
+
+    <h3>双流协同训练（Dual-Stream Co-Training）</h3>
+    <p>
+      以 9:1 的机器人数据与 VL 数据比例同步训练 VLA 流和 VLM 流，防止动作预测压力导致 VLM 主干感知与推理能力退化。VL 数据包括通用视觉理解、空间感知与推理、OCR、多模态专业知识、指令跟随，以及专门合成的体态中心 VL 数据（Embodied Chain-of-Thought、自我中心视频理解、2D 轨迹预测）。
+    </p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验</h2>
+    <p class="lead">
+      在仿真 OOD 基准（LIBERO-Plus、RoboTwin-Clean2Rand、RoboCasa365、EBench、RoboTwin-IF、RoboTwin-XE）与真实机器人平台（AgileX CobotMagic ALOHA、ARX ALOHA、UR5、Franka）上进行系统评测，以 π₀（Black et al., 2024）和 π₀.₅（Black et al., 2025）为主要基线。
+    </p>
+
+    <h3>标准基准（In-Distribution）</h3>
+    <table>
+      <tr><th>方法</th><th>LIBERO</th><th>RoboTwin-Easy</th><th>RoboTwin-Hard</th></tr>
+      <tr><td>π₀ (Black et al., 2024)</td><td>94.4</td><td>65.9</td><td>58.4</td></tr>
+      <tr><td>π₀.₅ (Black et al., 2025)</td><td>97.6</td><td>82.7</td><td>76.8</td></tr>
+      <tr><td>StarVLA (Community, 2026)</td><td>98.0</td><td>85.7</td><td>87.3</td></tr>
+      <tr><td>Abot-M0 (Yang et al., 2026)</td><td>98.6</td><td>86.1</td><td>85.1</td></tr>
+      <tr><td>Being-H0.7 (Luo et al., 2026c)</td><td><b>99.2</b></td><td>90.2</td><td>89.6</td></tr>
+      <tr><td>Qwen-RobotManip</td><td>99.1</td><td>93.4</td><td>92.5</td></tr>
+      <tr><td class="good">Qwen-RobotManip-Context</td><td class="good">99.2</td><td class="good">93.7</td><td class="good">94.0</td></tr>
+    </table>
+
+    <h3>OOD 泛化基准（核心评测）</h3>
+    <figure>
+      <img src="img/ood-results.webp" alt="OOD 泛化结果汇总">
+      <figcaption>
+        <b>图7 OOD 泛化结果汇总（论文 Figure 7）。</b>
+        (a) 任务与场景泛化：LIBERO-Plus、EBench、RoboCasa365-Unseen、LIBERO-Plus 各设定下 Qwen-RobotManip（深紫）大幅领先 π₀.₅（浅紫），且差距随评测难度上升而扩大。
+        (b) 指令跟随（RoboTwin-IF）：Pick-Diverse（+35pp）、Place-Relative（+37pp）、Operate-Mic-Drawer（+27pp）、Operate-Tabletop（+27pp）均显著领先，平均 72.2% vs. π₀.₅ 49.6%。
+        (c) 零样本跨形态迁移（RoboTwin-XE，camera-frame EEF）：ARX-X5 42.9%、UR5-WSG 22.8%、Franka 5.9%，总体 23.9%，约为 π₀.₅（7.5%）的 3.2 倍。
+      </figcaption>
+    </figure>
+
+    <table>
+      <tr><th>基准（OOD）</th><th>π₀.₅ (SOTA)</th><th>Qwen-RobotManip</th><th>Qwen-RobotManip-Context</th></tr>
+      <tr><td>LIBERO-Plus (Total)</td><td>84.4</td><td>89.0</td><td class="good">91.4</td></tr>
+      <tr><td>RoboTwin-C2R (Hard)</td><td>47.9</td><td>69.4</td><td class="good">69.4</td></tr>
+      <tr><td>RoboCasa365 (Total)</td><td>16.9</td><td class="good">35.9</td><td>33.8</td></tr>
+      <tr><td>EBench (Overall SR)</td><td>27.1</td><td class="good">45.6</td><td>43.6</td></tr>
+      <tr><td>RoboTwin-IF (Avg.)</td><td>49.6</td><td class="good">72.2</td><td>72.0</td></tr>
+      <tr><td>RoboTwin-XE (Avg., eef)</td><td>7.5</td><td class="good">23.9</td><td>—</td></tr>
+    </table>
+
+    <h3>真实机器人评测</h3>
+    <figure>
+      <img src="img/real-world.webp" alt="真实机器人高难度任务结果">
+      <figcaption>
+        <b>图17 RoboChallenge Table30-v1 六项高难度任务（论文 Figure 17）。</b>
+        包括：插网线（30% vs. 先前 SOTA 10%）、倒薯条入盘（30% vs. 0%）、制作素食三明治（10% vs. 0%——唯一非零成功率模型）、排列纸杯（70% vs. 10%）、分拣电子产品（50% vs. 0%）、折叠洗碗布（30% vs. 10%）。先前 SOTA Generalist 平均仅 5%，Qwen-RobotManip 达 36.7%。
+      </figcaption>
+    </figure>
+
+    <p>
+      在 CobotMagic ALOHA 平台上，ID 基准平均成功率 <b>88.6%</b>（π₀.₅ 42.9%，StarVLA 20.0%），OOD 基准 <b>87.5%</b>（π₀.₅ 37.5%，StarVLA 0.0%）。在 ARX ALOHA 上，少样本自适应（130 次演示）四项任务 Qwen-RobotManip 胜出；跨形态技能迁移（4 项新任务，零 ARX 演示）达 <b>55.0%</b>，而消融基线（w/o UnifiedSpace 7.5%、w/o UnifiedEEF 12.5%）几乎失败，验证统一对齐的关键作用。
+    </p>
+
+    <h3>RoboChallenge Table30-v1 Generalist Track</h3>
+    <p>
+      提交 Qwen-RobotManip 至 Table30-v1 Generalist Track（30 项操作任务，跨 4 个实体形态），成功率 <b>45%</b>，过程分 59.83，超越 DM0_generalist（37% / 48.43 分）8 个百分点，排名第一，相对提升约 <b>20%</b>。在双臂协调任务（8 项）上平均 40.0%，在拾放任务（12 项）上平均 63.3%，均大幅领先所有基线。
+    </p>
+
+    <h3>消融实验</h3>
+    <p>
+      数据规模化曲线（Figure 18）显示：具有统一表示的变体（Ours、Ours w/o UnifiedEEF）在 1%–100% 训练数据区间内验证 MSE 近似对数线性下降，呈清晰数据规模化律；而 Ours w/o UnifiedSpace 曲线不稳定，EEF 动作预测 MSE 显著更高。验证了「对齐是规模化的前提」这一核心命题。
+    </p>
+    <p>
+      上下文自适应消融（Table 15）：无上下文基线（Structure Prompt 配置）Hard 平均 65.9%；添加上下文（10 denoising steps）提升至 <b>70.9%</b>（+5.0 点）；20 steps 无额外收益（71.0%）。随机上下文采样对于防止"复制近期动作"退化至关重要。
+    </p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性</h2>
+    <div class="note"><b>说明：</b>以下局限性部分为作者在技术报告中明确陈述，部分为从设计中推断（标注"设计推断"）。</div>
+    <details class="lim" open>
+      <summary>cold-start 上下文问题（作者明确陈述）</summary>
+      <p>「We do note one practical limitation observed in real-robot deployment: at the start of an episode, the context consists entirely of zero-padded placeholders, and the model, having learned to condition on quiescent history, tends to hesitate before initiating motion.」为此同时发布有/无上下文两种变体供用户按需选择。</p>
+    </details>
+    <details class="lim">
+      <summary>精细操作任务仍有明显差距（作者明确陈述）</summary>
+      <p>在 CobotMagic ALOHA ID 基准中，yellow-disc-insertion（精确插盘）成功率仅 2/5，作者指出「highlighting the difficulty of precise insertion on real hardware」。高精度接触丰富型操作仍是挑战。</p>
+    </details>
+    <details class="lim">
+      <summary>数据规模依赖合成与人手视频，领域偏移风险（设计推断）</summary>
+      <p>~24,808 小时合成数据来自人手视频经 Human-to-Robot 流水线渲染，视觉质量和动作分布与真实机器人数据仍存在域差距。尽管合成流水线已引入深度合成和 IK 求解，但极端光照、复杂纹理等场景的泛化能力尚未完整评估。</p>
+    </details>
+    <details class="lim">
+      <summary>评测覆盖局限：移动操作、灵巧手等形态偏少（设计推断）</summary>
+      <p>当前 OOD 评测主要集中在固定基座的桌面操作（单臂/双臂）。EBench 中移动操作任务上 Qwen-RobotManip 成功率（≈35%）低于固定桌面任务（≈50%），灵巧手形态数据量相对有限，泛化能力尚待验证。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    整理自论文原文与图表，仅供学习参考 · Qwen-RobotManip Technical Report · Qwen Team, 2026<br>
+    原文 / 博客：<a href="https://qwen.ai/blog?id=qwen-robotmanip">https://qwen.ai/blog?id=qwen-robotmanip</a>
+    &nbsp;·&nbsp;
+    代码：<a href="https://github.com/QwenLM/Qwen-RobotManip">https://github.com/QwenLM/Qwen-RobotManip</a>
+  </div>
+</footer>
+
+</body>
+</html>

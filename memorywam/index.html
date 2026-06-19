@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemoryWAM: 高效持久记忆的世界行动模型</title>
+<meta name="keywords" content="world action model, 机器人操作, hybrid memory, gist token, non-Markovian, KV cache, 长时序决策, persistent memory, diffusion transformer, RMBench">
+<meta name="description" content="MemoryWAM 提出混合记忆机制，将近期帧、事件边界锚帧与压缩 gist token 结合，在保持长期记忆的同时大幅降低推理延迟与显存占用，在仿真与真实机器人操作任务中超越强 VLA/WAM 基线。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">cs.RO · 2026</span>
+    <h1>MemoryWAM</h1>
+    <div class="sub">高效持久记忆的世界行动模型 (Efficient World Action Modeling with Persistent Memory)</div>
+    <div class="authors">Sizhe Yang · Juncheng Mu · Tianming Wei · Chenhao Lu · Xiaofan Li · Linning Xu · Zhengrong Xue · Zhecheng Yuan · Dahua Lin · Jiangmiao Pang · Huazhe Xu &nbsp;|&nbsp; 香港中文大学 · 清华大学 · 浙江大学</div>
+    <p class="lead">机器人操作的长时序任务中，现有世界行动模型（WAM）面临记忆与效率的根本矛盾：滑动窗口方法推理高效但遗忘长程上下文，全历史 KV 缓存方法具备记忆能力却随序列增长导致延迟与显存急剧上升。MemoryWAM 提出混合记忆设计——近期帧、事件边界锚帧、以及压缩长程历史的 gist token——将推理时间与空间复杂度从 O(N) 降至 O(N/d)，同时在仿真与真实机器人任务中超越强 VLA/WAM 基线。</p>
+    <div class="meta">
+      <span>arXiv 2026-06-18</span>
+      <span>cs.RO</span>
+      <span>RMBench 评测</span>
+      <span><a href="https://arxiv.org/abs/2606.20562">📄 arXiv:2606.20562</a></span>
+      <span><a href="https://yangsizhe.github.io/MemoryWAM/">🌐 Project Page</a></span>
+    </div>
+    <div class="kw">
+      <span>world action model</span>
+      <span>hybrid memory</span>
+      <span>gist token</span>
+      <span>non-Markovian</span>
+      <span>机器人操作</span>
+      <span>KV cache</span>
+      <span>长时序决策</span>
+      <span>diffusion transformer</span>
+      <span>persistent memory</span>
+      <span>RMBench</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · Motivation</a>
+  <a href="#method">2 · Method</a>
+  <a href="#exp">3 · Experiments</a>
+  <a href="#limit">4 · Limitations</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> Motivation</h2>
+    <p class="lead">真实世界中的机器人操作不仅需要理解当前观测，还需要<strong>记忆</strong>与<strong>动态建模</strong>。现有 WAM 在高效推理（短窗口）和长历史保留（全 KV 缓存）之间存在不可调和的权衡，导致非 Markov 任务中两类方法均存在显著缺陷。</p>
+    <blockquote>"Existing WAMs face a fundamental trade-off: methods with efficient inference typically condition only on a bounded window of recent observations and therefore struggle in non-Markovian environments, whereas methods that preserve long histories incur time and space costs that grow substantially with sequence length."</blockquote>
+    <figure>
+      <img src="img/x1.webp" alt="MemoryWAM overview — memory efficiency tradeoff">
+      <figcaption><strong>Figure 1 · 总览。</strong>滑动窗口方法（左）推理为 O(1)，但丢失长程上下文；全 KV 缓存方法（中）保留完整历史但推理随轨迹长度 N 线性增长。MemoryWAM（下）引入 hybrid memory：近期帧（短期记忆）+ 锚帧（事件边界）+ gist token（长程摘要），复杂度从 O(N) 降至 O(N/d)。右侧散点图显示 MemoryWAM 在 RMBench 上达到最高成功率且推理延迟最低。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>83.0%</b><small>RMBench 平均成功率（Ours）</small></div>
+      <div><b>78.2%</b><small>LingBot-VA（全历史 KV 缓存基线）</small></div>
+      <div><b>O(N/d)</b><small>MemoryWAM 推理复杂度</small></div>
+      <div><b>10.4%</b><small>π₀.₅（短窗口 VLA 基线）</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> Method</h2>
+    <p class="lead">MemoryWAM 以 <strong>Mixture-of-Transformers (MoT)</strong> 架构为主干，将 video DiT（视觉动态建模）与 action DiT（动作预测）双路并行，并引入三层混合记忆机制，通过定制化注意力掩码实现高效持久上下文检索。</p>
+
+    <figure>
+      <img src="img/x2.webp" alt="MemoryWAM architecture">
+      <figcaption><strong>Figure 2 · 系统架构。</strong>MemoryWAM 由 video DiT (Φ_v) 与 action DiT (Φ_a) 构成 MoT 架构。训练时 video DiT 通过视频预测提供稠密监督；推理时仅前向一次当前帧更新 KV 缓存，无需生成未来帧。持久记忆保留初始锚帧的完整 token 与最近帧，并将长程历史压缩为少量 gist token。</figcaption>
+    </figure>
+
+    <h3>混合记忆（Hybrid Memory）三层设计</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>短期记忆：Sliding Window</h3>
+        <p>保留最近 N 帧的完整视觉 token，为当前动作规划提供高保真短期上下文。计算量固定为 O(N)（N 为滑窗大小，而非轨迹长度）。</p>
+      </div>
+      <div class="card">
+        <h3>事件边界记忆：Anchor Frames</h3>
+        <p>在任务起始等"事件边界"处保留完整视觉 token 作为锚帧，提供关键初始状态信息。灵感来源于认知心理学中事件边界对记忆的高度显著性。</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>长程记忆：Gist Tokens</h3>
+      <p>对超出滑窗的远程帧，用少量（可学习的）<strong>gist token</strong> 对完整 token 序列进行压缩，将每帧 L 个 token 压缩到 L/d 个（d 为压缩比）。推理时仅保留 gist token 的 KV 缓存，丢弃原始帧缓存，将整体历史复杂度从 O(N) 降至 O(N/d)。</p>
+    </div>
+
+    <figure>
+      <img src="img/x3.webp" alt="MemoryWAM attention mask">
+      <figcaption><strong>Figure 3 · 注意力掩码。</strong>以三帧历史、一帧锚帧、一帧近期帧为例：f 为干净视频帧，g 为 gist token，a 为待去噪动作 token。近期帧可全量关注所有历史，远程历史仅通过 gist token 被访问。推理时仅保留 g_i 的 KV 缓存，f_i 的 KV 缓存被驱逐，实现持久记忆与高效推理的统一。</figcaption>
+    </figure>
+
+    <h3>训练目标</h3>
+    <p>MemoryWAM 继承高效 WAM 的核心优势：训练时通过视频预测任务（预测未来帧 z̃_{t+1:t+k}）提供稠密动态监督，推理时跳过视频生成，仅运行 action DiT 完成动作预测。动作 chunk a_{t:t+h-1} 由 action DiT 对带噪声的动作 token x_τ^a 去噪得到，条件为语言指令 l 和累积视频 KV 缓存 C^v_{≤t}。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> Experiments</h2>
+    <p class="lead">在 <strong>RMBench</strong>（长时序记忆依赖操作基准，9 项任务）和真实双臂机器人（ARX + RealSense D455）上评估，与 π₀.₅、FastWAM、LingBot-VA 对比，每项任务 100 次 rollout 统计成功率。</p>
+
+    <h3>记忆机制效率对比（Figure 4）</h3>
+    <figure>
+      <img src="img/x4.webp" alt="Efficiency comparison of memory mechanisms">
+      <figcaption><strong>Figure 4 · 记忆机制对比。</strong>(a) 单次前向延迟随序列长度增长曲线；(b) GPU 显存占用曲线；(c) Press Button 任务成功率。Hybrid memory 在序列长度 1,600 帧时仍比 RNN/TTT-based 方案更高效，且成功率（87%）与 Full Attention 持平。Full Attention 延迟显著更高但成功率不更优。</figcaption>
+    </figure>
+
+    <h3>RMBench 仿真实验（Table 1）</h3>
+    <table>
+      <tr>
+        <th>任务</th>
+        <th>π₀.₅</th>
+        <th>FastWAM</th>
+        <th>LingBot-VA</th>
+        <th>Ours</th>
+      </tr>
+      <tr><td>Observe and Pick Up</td><td>9%</td><td>0%</td><td>13%</td><td class="good">27%</td></tr>
+      <tr><td>Rearrange Blocks</td><td>13%</td><td>0%</td><td class="good">100%</td><td class="good">100%</td></tr>
+      <tr><td>Put Back Block</td><td>11%</td><td>0%</td><td class="good">100%</td><td class="good">100%</td></tr>
+      <tr><td>Swap Blocks</td><td>24%</td><td>0%</td><td>99%</td><td class="good">100%</td></tr>
+      <tr><td>Swap T</td><td>15%</td><td>7%</td><td>88%</td><td class="good">94%</td></tr>
+      <tr><td>Battery Try</td><td>16%</td><td>20%</td><td class="good">41%</td><td class="good">41%</td></tr>
+      <tr><td>Blocks Ranking Try</td><td>6%</td><td>26%</td><td class="good">100%</td><td class="good">100%</td></tr>
+      <tr><td>Cover Blocks</td><td>0%</td><td>0%</td><td>79%</td><td class="good">98%</td></tr>
+      <tr><td>Press Button</td><td>0%</td><td>0%</td><td>84%</td><td class="good">87%</td></tr>
+      <tr style="font-weight:700"><td><em>Average</em></td><td>10.4%</td><td>5.9%</td><td>78.2%</td><td class="good">83.0%</td></tr>
+    </table>
+    <p>短窗口方法（π₀.₅、FastWAM）在记忆依赖任务上大量失败（平均 &lt;11%）。MemoryWAM 平均成功率比全历史 KV 缓存的 LingBot-VA 高 <strong>4.8 个百分点</strong>，且在每项任务上均达到领先或持平。</p>
+
+    <h3>真实机器人实验（Table 2）</h3>
+    <figure>
+      <img src="img/x5.webp" alt="Real-world task illustration">
+      <figcaption><strong>Figure 5 · 真实世界任务示意。</strong>左：Shell Game——人手随机交换杯子后，机器人需识别藏有方块的杯子并抓取（需追踪遮挡物体）。右：Look and Press——机器人观察桌上两个数字，依次按对应次数的按钮，最后按下确认键（需计数工作记忆）。</figcaption>
+    </figure>
+    <table>
+      <tr><th>任务</th><th>π₀.₅</th><th>LingBot-VA</th><th>Ours</th></tr>
+      <tr><td>Shell Game</td><td>5/20</td><td>13/20</td><td class="good">18/20</td></tr>
+      <tr><td>Look and Press</td><td>0/20</td><td>14/20</td><td class="good">15/20</td></tr>
+    </table>
+    <p>真实机器人上 MemoryWAM 两项任务均最优。值得注意的是，LingBot-VA 高推理延迟导致其在 Shell Game 中错过杯子交换时机而失败——印证了效率本身也是操作性能的组成部分。</p>
+
+    <h3>消融实验（Table 3）</h3>
+    <p>去除 gist token 导致最大性能下降，说明长程历史压缩是记忆依赖决策的核心。去除锚帧或滑窗均降低性能，证明三类记忆提供互补收益。Full Attention（保留所有历史）性能反而弱于混合记忆，说明<strong>"密集历史并非最优"</strong>——冗余信息增加检索难度。消融结论："MemoryWAM's hybrid memory design is not merely an efficiency-oriented compromise, but an effective memory structure."</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> Limitations</h2>
+    <div class="note"><b>Note:</b> 本文无显式 Limitations 章节。以下局限性：前两点为论文结论/方法设计中直接推断（<em>inferred from design</em>），第三点基于实验规模。</div>
+    <details class="lim" open>
+      <summary>压缩比 d 是固定超参数（inferred）</summary>
+      <p>gist token 压缩比 d 在训练前固定，无法自适应任务难度或历史重要性动态调整。对于信息密度不均匀的轨迹，固定压缩可能导致部分关键帧被过度压缩或欠压缩。</p>
+    </details>
+    <details class="lim">
+      <summary>锚帧选择依赖任务边界先验（inferred）</summary>
+      <p>当前方案以任务初始帧作为锚帧（"initial observations of a task"），需预先知道任务开始时刻。对于无明确起点或多阶段混合的连续操作场景，锚帧定义可能不够通用。</p>
+    </details>
+    <details class="lim">
+      <summary>真实机器人实验规模有限（stated via experiment size）</summary>
+      <p>真实机器人实验每任务仅 20 次 rollout，演示数据分别为 50（Shell Game）和 100（Look and Press）条。样本量相对较小，泛化性结论需更大规模验证。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · MemoryWAM: Efficient World Action Modeling with Persistent Memory · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2606.20562">https://arxiv.org/abs/2606.20562</a>
+  </div>
+</footer>
+
+</body>
+</html>

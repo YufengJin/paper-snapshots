@@ -1,0 +1,11 @@
+{
+  "slug": "flow-grpo",
+  "title": "Flow-GRPO: Training Flow Matching Models via Online RL",
+  "arxiv_id": "2505.05470",
+  "url": "https://arxiv.org/abs/2505.05470",
+  "category": "生成模型 · Generative Models",
+  "keywords": ["flow matching", "GRPO", "在线强化学习", "ODE-to-SDE", "reward hacking", "文本到图像生成", "Denoising Reduction", "组合图像生成"],
+  "summary_zh": "Flow-GRPO 首次将在线策略梯度 RL（GRPO）引入 flow matching 文本到图像模型，通过 ODE-to-SDE 转换注入随机性，并采用 Denoising Reduction 加速训练采样，使 SD3.5-M 的 GenEval 准确率从 63% 提升至 95%，视觉文字渲染从 59% 提升至 92%，同时通过 KL 正则有效抑制 reward hacking。",
+  "date": "2026-06-19",
+  "source": "arxiv-html"
+}

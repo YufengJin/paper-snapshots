@@ -1,0 +1,11 @@
+{
+  "slug": "qwen-robotnav",
+  "title": "Qwen-RobotNav Technical Report: A Scalable Navigation Model Designed for an Agentic Navigation System",
+  "arxiv_id": "",
+  "url": "https://qwen.ai/blog?id=qwen-robotnav",
+  "category": "机器人 · Robotics",
+  "keywords": ["具身导航", "vision-and-language navigation", "多任务导航", "task-adaptive observation encoding", "agentic navigation", "VLN", "object-goal navigation", "目标追踪", "autonomous driving", "Qwen3-VL"],
+  "summary_zh": "Qwen-RobotNav 基于 Qwen3-VL 构建，通过参数化观测编码接口（token 预算、时间衰减、相机权重）统一处理指令跟随、目标搜索、目标追踪和自动驾驶等多类导航任务，在 15.6M 样本上联合训练后于 VLN-CE、EVT-Bench、HM3D、NAVSIM 等基准刷新最优，并作为智能体导航系统的执行器在具身问答任务上大幅领先前序方法。",
+  "date": "2026-06-19",
+  "source": "https://github.com/QwenLM/Qwen-RobotNav"
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next-Latent Prediction Transformers Learn Compact World Models</title>
+<meta name="keywords" content="world model, next-latent prediction, belief state, POMDP, speculative decoding, transformer, 潜在状态预测, 世界模型, 压缩表征">
+<meta name="description" content="NextLat 在标准 next-token 训练之外增加潜在状态自监督预测，理论上证明其隐藏状态收敛至 belief states，从而让 Transformer 学会紧凑的世界模型，并在推理、规划和语言建模上全面提升。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:38px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">Microsoft Research · Preprint 2025 · arXiv:2511.05963</span>
+    <h1>Next-Latent Prediction Transformers Learn Compact World Models</h1>
+    <div class="sub">让 Transformer 在潜在空间里"预见未来"，从而自发学会紧凑世界模型</div>
+    <div class="authors">Jayden Teoh, Manan Tomar, Kwangjun Ahn, Edward S. Hu, Tim Pearce, Pratyusha Sharma, Akshay Krishnamurthy, Riashat Islam, Alex Lamb, John Langford &nbsp;·&nbsp; Microsoft Research</div>
+    <p class="lead">标准 next-token 预测缺乏压缩历史信息的内在动机，导致 Transformer 学到依赖 ad-hoc attention 查找的"捷径"，泛化能力有限。本文提出 <strong>NextLat</strong>——在不改变模型架构和推理流程的前提下，额外训练一个轻量 latent dynamics model，令每一步隐藏状态能预测下一步隐藏状态；理论上证明这使隐藏状态收敛为 <strong>belief states</strong>，并在世界建模、推理、规划和语言建模上全面提升性能，同时支持最高 <strong>3.3×</strong> 的 self-speculative decoding 加速。</p>
+    <div class="meta">
+      <span>Microsoft Research</span>
+      <span>Preprint 2025</span>
+      <span>1.3B 参数规模验证</span>
+      <span><a href="https://arxiv.org/abs/2511.05963">📄 arXiv:2511.05963</a></span>
+      <span><a href="https://github.com/JaydenTeoh/NextLat">GitHub 代码</a></span>
+    </div>
+    <div class="kw">
+      <span>world model</span>
+      <span>next-latent prediction</span>
+      <span>belief state</span>
+      <span>POMDP</span>
+      <span>speculative decoding</span>
+      <span>transformer</span>
+      <span>潜在状态预测</span>
+      <span>世界模型</span>
+      <span>压缩表征</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机 · Motivation</h2>
+    <p class="lead">Transformer 的自注意力机制允许模型在任意时刻直接"查询"过去的 token，从而不必把历史信息压缩成紧凑的内部状态。这带来了一个根本性的问题：</p>
+    <blockquote>
+      "Transformers lack an inherent incentive to compress history into compact latent states with consistent transition rules, which often leads to learning solutions that generalize poorly."
+    </blockquote>
+    <p>相比之下，循环神经网络（RNN）因为每步只能访问一个固定大小的隐藏状态，被迫学习紧凑的状态表征。如果能把这种"循环归纳偏置"（recurrent inductive bias）注入 Transformer，同时保留其并行训练优势，就能得到一个既高效又泛化能力强的模型。这正是 NextLat 的出发点。</p>
+
+    <figure>
+      <img src="img/model_comparison.webp" alt="不同预测机制对比">
+      <figcaption><strong>图 1：</strong>四种预测机制对比。GPT 仅做 next-token 预测；MTP（Multi-Token Prediction）在 token 空间并行预测多步；JTP（Joint Token Prediction）联合预测；<strong>NextLat</strong> 在隐藏状态空间中通过轻量 dynamics model 迭代滚动预测，从而引入循环归纳偏置，且推理时完全不需要 dynamics model。</figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>3.32×</b><small>推理加速（Books 集，speculative decoding）</small></div>
+      <div><b>52.7</b><small>NextLat 有效潜在秩（vs. GPT 的 160.1，压缩 3×）</small></div>
+      <div><b>98.7%</b><small>世界建模任务 OOD 有效轨迹率（vs. GPT 97.0%）</small></div>
+      <div><b>~100%</b><small>G₇,₇ 规划任务准确率（MTP/JTP 大幅失败）</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法 · Method</h2>
+    <p class="lead">NextLat 在标准 Transformer 之外附加一个轻量 <strong>latent dynamics model</strong>（实验中为简单 MLP），通过三个损失函数联合训练，推理时 dynamics model 完全被丢弃，不增加任何推理开销。</p>
+
+    <h3>训练目标</h3>
+    <p>联合损失函数（公式 5）为：</p>
+    <blockquote>
+      ℒ<sub>NextLat</sub> = ℒ<sub>next-token</sub> + λ<sub>next-h</sub>·ℒ<sub>next-h</sub> + λ<sub>KL</sub>·ℒ<sub>KL</sub>
+    </blockquote>
+    <ul>
+      <li><strong>ℒ<sub>next-token</sub>：</strong>标准 cross-entropy，与 GPT 完全相同。</li>
+      <li><strong>ℒ<sub>next-h</sub>（Smooth L1）：</strong>Dynamics model 在隐藏状态空间中做 d 步滚动预测，用 stop-gradient 防止表征坍缩。这一目标提供"比 token 级监督更密集的梯度信号"。</li>
+      <li><strong>ℒ<sub>KL</sub>：</strong>知识蒸馏约束——要求预测的隐藏状态与真实 token 预测分布保持一致，确保潜在预测在语义上有意义。</li>
+    </ul>
+
+    <h3>理论保证：Belief State 收敛（定理 3.2）</h3>
+    <p>论文在 POMDP 框架下严格证明：若 NextLat 同时最优化 next-token 一致性和 transition 一致性，则隐藏状态必然成为 <strong>belief states</strong>——即"预测未来所需历史信息的充分统计量"（sufficient statistics of history for predicting future tokens）。这是首个证明潜在状态预测能诱导 Transformer 学习 belief state 的理论结果。</p>
+
+    <figure>
+      <img src="img/spec_decoding.webp" alt="Self-Speculative Decoding">
+      <figcaption><strong>图 2：</strong>NextLat 支持的 variable-length self-speculative decoding。Dynamics model 在推理时充当 draft model，从当前隐藏状态出发滚动生成多个候选 token，再由主 Transformer 验证接受。与 MTP 固定 d 步草稿不同，NextLat 可动态超过训练 horizon，接受率更高。</figcaption>
+    </figure>
+
+    <h3>与 MTP/JTP 的关键区别</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3>MTP / JTP（token 空间预测）</h3>
+        <ul>
+          <li>在 token 输出空间并行预测多步</li>
+          <li>梯度信号稀疏，依赖 token 离散分布</li>
+          <li>Speculative decoding 固定在训练的 d 步</li>
+          <li>训练计算开销随 d 线性增长</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>NextLat（隐藏状态空间预测）</h3>
+        <ul>
+          <li>在连续隐藏状态空间中迭代滚动预测</li>
+          <li>梯度信号更密集，每步都携带未来多步信息</li>
+          <li>Speculative decoding 可 <em>超越</em> 训练 horizon</li>
+          <li>推理零开销（dynamics model 被丢弃）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验 · Experiments</h2>
+    <p class="lead">实验覆盖五类任务：世界建模（Manhattan 出租车）、推理（Countdown / Game of 24）、规划（Path-Star 图）、语言建模（FineWeb-Edu，1.3B 参数，100B tokens）、长程预测性（TinyStories）和状态追踪（A₅ 单词问题）。</p>
+
+    <h3>世界建模：Manhattan 出租车轨迹</h3>
+    <p>在有向图上随机游走数据集（OOD 测试）中，评估内部表征是否能重建地图结构：</p>
+    <table>
+      <tr><th>模型</th><th>有效轨迹率 (OOD)</th><th>序列压缩比</th><th>有效潜在秩</th><th>绕路鲁棒性</th></tr>
+      <tr><td>GPT</td><td>97.0%</td><td>—</td><td>160.1</td><td>—</td></tr>
+      <tr><td>MTP (d=8)</td><td>98.1%</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td class="good">NextLat</td><td class="good">98.7%</td><td class="good">0.71（最高）</td><td class="good">52.7（最低）</td><td class="good">95.0%</td></tr>
+    </table>
+    <p>NextLat 的有效潜在秩（52.7）约为 GPT（160.1）的 <strong>1/3</strong>，说明其表征更紧凑，确实在内部维持了类似"地图"的世界模型。</p>
+
+    <figure>
+      <img src="img/manhattan_nextlat.webp" alt="NextLat 重建的曼哈顿地图">
+      <figcaption><strong>图 3：</strong>对 NextLat 隐藏状态做线性探测后重建的内部"地图"。与 GPT/MTP/JTP 相比，NextLat 重建出的街道布局最接近真实曼哈顿网格，说明其隐藏状态中确实编码了紧凑的环境结构（belief state）。</figcaption>
+    </figure>
+
+    <h3>推理与规划</h3>
+    <table>
+      <tr><th>任务</th><th>GPT</th><th>MTP (d=8)</th><th>NextLat (d=1)</th></tr>
+      <tr><td>Countdown（Game of 24）准确率</td><td>33.1%</td><td>57.3%</td><td class="good">54.8%</td></tr>
+      <tr><td>G₇,₇ 规划（Path-Star 图）</td><td>部分失败</td><td>大幅失败</td><td class="good">~100%</td></tr>
+    </table>
+    <p>在 G₇,₇ 规划任务上，NextLat 接近满分，而 MTP/JTP 大幅失败，说明 NextLat 的潜在空间监督有效避免了 token 空间方法的"捷径学习"（shortcut learning）问题。</p>
+
+    <h3>语言建模（FineWeb-Edu，1.3B 参数）</h3>
+    <table>
+      <tr><th>模型</th><th>FW-Edu PPL ↓</th><th>Wiki PPL ↓</th><th>LAMBADA PPL ↓</th></tr>
+      <tr><td>GPT</td><td>10.52</td><td>17.93</td><td>20.26</td></tr>
+      <tr><td>MTP (d=2)</td><td>11.00</td><td>18.61</td><td>18.34</td></tr>
+      <tr><td class="good">NextLat (d=2)</td><td class="good">10.88</td><td class="good">18.44</td><td class="good">17.83</td></tr>
+    </table>
+    <p>NextLat 在保持 next-token 性能的同时（与 GPT 相近），在 LAMBADA 长程依赖基准上显著优于 MTP/JTP。</p>
+
+    <h3>Self-Speculative Decoding 加速</h3>
+    <table>
+      <tr><th>模型 (d=2)</th><th>Books 加速比</th><th>Books 平均接受 token 数</th><th>Wiki 加速比</th></tr>
+      <tr><td>MTP</td><td>1.72×</td><td>1.83</td><td>—</td></tr>
+      <tr><td>JTP</td><td>1.90×</td><td>1.89</td><td>—</td></tr>
+      <tr><td class="good">NextLat</td><td class="good">3.32×</td><td class="good">4.86</td><td class="good">3.21×</td></tr>
+    </table>
+
+    <figure>
+      <img src="img/spec_graph.webp" alt="推理加速对比">
+      <figcaption><strong>图 4：</strong>Speculative decoding 加速比对比。NextLat（蓝）在所有 draft 长度下均大幅领先 MTP（橙）和 JTP（绿），且可超越训练 horizon 继续采样，因此接受 token 数（4.86）远超 MTP（1.83）。</figcaption>
+    </figure>
+
+    <h3>长程预测性（TinyStories）</h3>
+    <figure>
+      <img src="img/tinystories_results.webp" alt="TinyStories 线性探测结果">
+      <figcaption><strong>图 5：</strong>在冻结表征上用线性探测预测 offset=1–20 步后的 token。NextLat（d=1 和 d=8）在所有偏移量上均最强，而 MTP/JTP 在超过 5–10 步后性能急剧下降，说明 NextLat 的表征确实编码了更长程的预测信息。</figcaption>
+    </figure>
+
+    <h3>训练效率对比</h3>
+    <table>
+      <tr><th>模型</th><th>训练速度（steps/sec）</th></tr>
+      <tr><td>GPT</td><td>3.09</td></tr>
+      <tr><td class="good">NextLat (d=1)</td><td class="good">3.09（与 GPT 相同）</td></tr>
+      <tr><td>MTP (d=1)</td><td>2.80</td></tr>
+      <tr><td>NextLat (d=8)</td><td>1.73</td></tr>
+      <tr><td>BST</td><td>0.89（慢 3.5×）</td></tr>
+    </table>
+    <p>d=1 时 NextLat 与 GPT 训练速度完全相同，梯度计算复杂度为 O(Td)，远优于 BST 的 O(T²)。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性 · Limitations</h2>
+    <div class="note"><b>Note：</b>以下局限性均由论文作者在正文中明确陈述（stated）。</div>
+
+    <details class="lim" open>
+      <summary>Dynamics model 设计简单，未探索更强的架构</summary>
+      <p>所有实验均使用简单 MLP 作为 latent dynamics model，"more expressive architectures unexplored"。更复杂的 dynamics model（如 Transformer）是否能带来进一步提升尚不清楚。</p>
+    </details>
+
+    <details class="lim" open>
+      <summary>超参设计缺乏原则性依据</summary>
+      <p>Stop-gradient、KL loss 等关键设计选择"guided by small-scale ablations, not principled principles"，且没有系统性研究 d>1 和 KL 监督在大规模场景下是否必要。</p>
+    </details>
+
+    <details class="lim">
+      <summary>与最新 MTP 变体（如 DeepSeek-v3）的比较有限</summary>
+      <p>论文未系统比较 DeepSeek-v3 等近期更强的 MTP 变体，使得 NextLat 在最新工业实践中的相对优势尚不明确。</p>
+    </details>
+
+    <details class="lim">
+      <summary>Speculative decoding 使用固定草稿长度</summary>
+      <p>"Speculative decoding uses fixed draft lengths per prompt, not adaptive"。每个 prompt 的最优草稿长度应自适应调整，但当前实现使用固定长度，未能充分挖掘 NextLat 可变长度的潜力。</p>
+    </details>
+
+    <details class="lim">
+      <summary>对优化动态敏感，表征语义分析不足</summary>
+      <p>损失轨迹因优化器（AdamW vs. Muon）而异；NextLat 学到的表征语义结构"not thoroughly analyzed"，缺乏对内部 belief state 的更深入可解释性研究。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    基于论文原文整理，数据与图表均来自原文 · 仅供学习参考<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2511.05963">https://arxiv.org/abs/2511.05963</a>
+    &nbsp;·&nbsp; 代码: <a href="https://github.com/JaydenTeoh/NextLat">github.com/JaydenTeoh/NextLat</a>
+  </div>
+</footer>
+
+</body>
+</html>

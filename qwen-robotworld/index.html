@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!--
+  PAPER POSTER — self-contained, no dependencies. 中文海报，无 EN 版本。
+  Qwen-RobotWorld Technical Report | date: 2026-06-19
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen-RobotWorld：语言条件视频世界模型统一具身智能</title>
+<meta name="keywords" content="embodied world model, video generation, language-conditioned, MMDiT, 具身智能, 机器人操作, 自动驾驶, human-to-robot transfer, EWK dataset, 多视角生成">
+<meta name="description" content="Qwen-RobotWorld 以自然语言为统一动作接口，通过语言条件视频生成统一机器人操作、自动驾驶与室内导航的具身世界建模，在 EWMBench 总分第一。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics | Tech Report 2026</span>
+    <h1>Qwen-RobotWorld</h1>
+    <div class="sub">通过语言条件视频生成统一具身世界建模</div>
+    <div class="authors">Jie Zhang*, Xiaoyue Chen* 等 · Qwen Team (Alibaba) · 2026-06-16</div>
+    <p class="lead">Qwen-RobotWorld 以自然语言为统一动作接口，通过一个双流 MMDiT 扩散模型，将机器人操作、自动驾驶、室内导航和人到机器人迁移统一建模为语言条件视频生成任务。模型在 EWMBench 总分第一（4.60），在 DreamGen Bench 总分第一（4.952），并在 WorldModelBench 超越所有开源模型（8.99）。</p>
+    <div class="meta">
+      <span>Tech Report · 2026-06-16</span>
+      <span>60-layer Double-stream MMDiT · 20B params</span>
+      <span>EWK Dataset · 8.6M video-text pairs · 200M+ frames</span>
+      <span><a href="https://qwen.ai/blog?id=qwen-robotworld">📄 Qwen Blog / Tech Report</a></span>
+    </div>
+    <div class="kw">
+      <span>embodied world model</span>
+      <span>language-conditioned video generation</span>
+      <span>Double-stream MMDiT</span>
+      <span>具身智能</span>
+      <span>human-to-robot transfer</span>
+      <span>EWK dataset</span>
+      <span>机器人操作</span>
+      <span>多视角一致性生成</span>
+      <span>自动驾驶</span>
+      <span>progressive curriculum training</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机 · Motivation</h2>
+    <p class="lead">具身智能要求智能体在物理环境中感知、推理并行动——覆盖桌面机器人操作、城市自动驾驶与室内导航等场景。世界模型通过从观测数据中学习环境动力学，充当可扩展的虚拟训练平台。然而，现有方法存在根本矛盾：通用视频生成模型缺乏物理接触约束，而专用具身模型又依赖 joint angles / waypoints 等机器人特有表示，难以跨平台泛化。</p>
+    <blockquote>"natural language is the most general and accessible action representation … a single instruction such as 'pick up the red cup and place it on the shelf' implicitly encodes the complete action sequence, goal state, and physical constraints, without requiring robot-specific control interfaces."</blockquote>
+    <figure>
+      <img src="img/teaser.webp" alt="Qwen-RobotWorld 封面：EWK数据集多样性与雷达图综合评分">
+      <figcaption>论文首页 teaser。左侧展示 EWK 数据集的 Multi-Embodiment / Multi-Task / Multi-Scenario / Multi-View 四维多样性；中间展示 Double-stream MMDiT 架构示意，语言动作（Action）与视觉观测（Observation）分别经 Qwen2.5-VL 和 VAE 编码后融合，预测未来帧（Prediction）；右侧雷达图显示 Qwen-RobotWorld 在各评测维度的综合领先。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>#1</b><small>EWMBench 总分（4.60，较次优 LVP +0.55）</small></div>
+      <div><b>#1</b><small>DreamGen Bench 总分（4.952，三个机器人具身子集）</small></div>
+      <div><b>8.99</b><small>WorldModelBench 开源最优（完美物理遵从，得分 5.00）</small></div>
+      <div><b>0.804</b><small>PBench Overall Score，开源最优，Domain 分 0.857 排名第 3</small></div>
+    </div>
+    <figure>
+      <img src="img/ewk-overview.webp" alt="EWK 训练语料概览图（Figure 1）">
+      <figcaption><strong>Figure 1：EWK（Embodied World Knowledge）训练语料总览。</strong>顶部为通用世界数据（14 平台视频 + 20 数据集图像）；中部结构化具身数据沿四个互补轴组织——Multi-Embodiment（人手、多样机械臂、移动智能体）、Multi-Task（短程原子技能、长程复合规划、特定技能）、Multi-Scenario（真实场景 + 仿真场景）、Multi-View（主视角、手腕视角、同步多视角）；底部归纳语义、几何、物理对齐与因果关系等训练目标。语料共 8.6M 视频-文本对，逾 200M 观测帧。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法 · Method</h2>
+    <p class="lead">Qwen-RobotWorld 通过三大创新实现统一具身世界建模：(a) <strong>Double-Stream MMDiT with MLLM Action Encoding</strong>——将冻结的 Qwen2.5-VL 作为动作编码器，与 VAE 视觉流在每个 Transformer 层通过双向 cross-attention 融合；(b) <strong>Embodied World Knowledge (EWK)</strong>——8.6M 视频-文本语料，覆盖 20+ 机器人形态与 500+ 动作类别；(c) <strong>General + Expert Progressive Curriculum</strong>——先学通用视觉先验，再进行具身专项精调。</p>
+
+    <figure>
+      <img src="img/architecture.webp" alt="Qwen-RobotWorld 模型架构图（Figure 3）">
+      <figcaption><strong>Figure 3：60 层 Double-stream MMDiT 视频生成架构。</strong>理解流（understanding stream）接收冻结 Qwen2.5-VL 对语言动作 <em>a<sub>t</sub></em> 提取的 last-layer hidden states <strong>h</strong>（经可训练 connector 投影）；生成流（generation stream）接收 VAE 编码的含噪状态 latent（当前帧 observation + 目标帧 prediction），通过 Patchify 展平后送入 60 个 double-stream MMDiT block，每层两流通过 joint attention 双向交互；最终由 UnPatchify 解码为预测视频帧。总参数：MLLM 7B + VAE 127M（encoder 54M + decoder 73M）+ MMDiT 20B；支持最长 48,360 个视频 token。</figcaption>
+    </figure>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>MLLM 作为动作编码器</h3>
+        <p>使用冻结的 Qwen2.5-VL 而非轻量级 T5 / CLIP 编码动作指令，具备两大优势：(1) 其深度语言理解能力可将复杂、组合式指令精确解析为控制信号；(2) 其内化的世界知识（如"机器臂关节有固定长度"）隐式约束物理可行转移空间，结合 T2I 协同训练，可在无需显式几何提示的情况下防止跨帧物体形变。</p>
+      </div>
+      <div class="card">
+        <h3>Scene2Robot 多段条件机制</h3>
+        <p>人到机器人迁移被建模为视频编辑任务：输入序列由三段构成——(1) 场景条件（原始人手操作视频，遮去手部）、(2) 机器人参考（MuJoCo 渲染的目标机器人轨迹）、(3) 待生成段（去噪为最终机器人执行视频）。三段共享同一 VAE-MMDiT pipeline，用 3D RoPE 时序索引区分。联合 attention 使生成段同时关注场景外观、机器人运动与语言动作语义，无需修改架构即可完成跨形态合成。</p>
+      </div>
+    </div>
+
+    <h3>EWK 数据集：Action-Language Mapping</h3>
+    <p>核心挑战是表示异构性：机械臂用 joint angles，驾驶用转向角，导航用方向向量——每类需要独立模型。EWK 通过 <strong>action-language mapping</strong> 框架将 20+ 机器人形态、500+ 动作类别统一映射至自然语言接口。标注采用五层分级框架：(1) Task Goal Layer，(2) Action Detail Layer（必须显式声明视角），(3) Physical Feedback Layer，(4) 50-100 词综合描述，(5) 15-30 词简洁指令。训练时以 50/50 比例采样，使模型同时具备详细轨迹执行与高层命令理解能力。</p>
+
+    <h3>General + Expert 进阶课程训练</h3>
+    <p>预训练阶段在 T2I / T2V / TI2V 三任务上联合训练，建立通用视觉先验（对象运动、光照变化、碰撞动力学）。SFT 精调阶段采用四阶段数据混合调度：单视角操作 → 多视角扩展 → 多视角拼接生成 → 复杂任务与跨领域数据。操作数据在约 90% 的采样权重下主导，确保物理接地深度；多视角拼接和导航/驾驶数据各约 5%，提供广度。Asymmetric 3D RoPE（时序维度 16 维、空间各 56 维）保证推理时跨同步相机视角的几何一致性。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验 · Experiments</h2>
+    <p class="lead">在四个基准上综合评测，对标两类 baseline：(1) 通用视频生成模型（Sora2、Veo3、Wan2.6、Kling、LTX-2）；(2) 具身世界模型（Cosmos、GigaWorld、LVP、Vidar、Wow）。</p>
+
+    <h3>EWMBench：具身运动保真度</h3>
+    <p>EWMBench 在场景一致性（SceneC）、运动正确性（HSD / Dyn / nDTW）、语义对齐（Diversity / BLEU / CLIP / Logics）三维评测，共 21 样本、7 类任务。</p>
+    <table>
+      <tr><th>模型</th><th>SceneC</th><th>HSD ↑</th><th>Dyn</th><th>nDTW</th><th>CLIP</th><th>Logics</th><th>Overall</th></tr>
+      <tr><td>LVP（次优具身）</td><td>0.8795</td><td>0.4248</td><td>0.0433</td><td>0.6226</td><td>0.8995</td><td>0.9524</td><td>4.05</td></tr>
+      <tr><td>GigaWorld</td><td>0.8707</td><td>0.3050</td><td>0.0849</td><td>0.2783</td><td>0.8873</td><td>0.9000</td><td>3.56</td></tr>
+      <tr><td>Wan2.6（最优通用）</td><td>0.6712</td><td>0.2034</td><td>0.0900</td><td>0.1715</td><td>0.8743</td><td>1.0000</td><td>3.22</td></tr>
+      <tr class="good"><td><strong>Qwen-RobotWorld（Ours）</strong></td><td class="good">0.9142</td><td class="good">0.5660</td><td>0.3429</td><td class="good">0.6708</td><td>0.8834</td><td class="good">1.0000</td><td class="good"><strong>4.60</strong></td></tr>
+    </table>
+    <p>HSD（0.566）较次优 LVP（0.425）提升 <strong>+33%</strong>；场景一致性 SceneC（0.914）与逻辑约束满足 Logics（1.00）均居首位。</p>
+
+    <h3>DreamGen Bench：GR1 机器人泛化</h3>
+    <p>评测 GR1 机器人三个泛化子集（Env / Object / Behavior）的 Physics Alignment（PA）与 Instruction Following（IF）。</p>
+    <table>
+      <tr><th>模型</th><th>GR1-Env PA</th><th>GR1-Env IF</th><th>GR1-Object PA</th><th>GR1-Object IF</th><th>GR1-Behavior PA</th><th>GR1-Behavior IF</th><th>Total</th></tr>
+      <tr><td>LVP</td><td>0.810</td><td>0.772</td><td>0.745</td><td>0.829</td><td>0.713</td><td>0.889</td><td>4.758</td></tr>
+      <tr><td>GigaWorld</td><td>0.621</td><td>0.933</td><td>0.500</td><td>0.852</td><td>0.426</td><td>0.884</td><td>4.216</td></tr>
+      <tr><td>Wow</td><td>0.793</td><td>0.826</td><td>0.755</td><td>0.849</td><td>0.809</td><td>0.696</td><td>4.728</td></tr>
+      <tr><td class="good"><strong>Qwen-RobotWorld（Ours）</strong></td><td>0.828</td><td>0.793</td><td class="good"><strong>0.840</strong></td><td class="good"><strong>0.878</strong></td><td>0.781</td><td>0.832</td><td class="good"><strong>4.952</strong></td></tr>
+    </table>
+    <p>GR1-Object IF 达 0.878（第 1），体现出色的物体级组合泛化能力。GR1-Behavior IF（0.832）略低于 LVP（0.889）与 GigaWorld（0.884），长程行为泛化仍有改进空间。</p>
+
+    <h3>WorldModelBench 与 PBench</h3>
+    <p>WorldModelBench 评测指令跟随（0-3 分）、常识和物理遵从（Newton 定律、质量守恒、流体动力学、重力——5 类物理违反）。Qwen-RobotWorld 总分 8.99，超越所有开源模型，物理遵从四项全满（1.00），指令跟随 2.33/3.0，常识分因输出分辨率较低略有差距。PBench Overall 0.804（开源最优），Domain 理解 0.857（全体第 3，超越大多数闭源模型），Motion Smoothness 0.990（开源第 2）。</p>
+
+    <figure>
+      <img src="img/results.webp" alt="EWMBench 与 DreamGen Bench 结果表（Table 2 &amp; 3）">
+      <figcaption><strong>Table 2 &amp; 3（原文）。</strong>EWMBench（上）和 DreamGen Bench（下）定量对比，粗体为列最优。Qwen-RobotWorld 在 EWMBench 整体排名第一（4.60）、DreamGen 整体排名第一（4.952）。</figcaption>
+    </figure>
+
+    <h3>定性分析：细粒度语言接地与跨形态泛化</h3>
+    <figure>
+      <img src="img/qualitative.webp" alt="细粒度语言接地定性结果（Figure 5）">
+      <figcaption><strong>Figure 5：细粒度语言接地定性结果。(a) 对比指令跟随：</strong>每对列共享相同初始帧，仅高亮关键词不同——目标物体（红色草莓 vs. 黄色土豆）、目标位置（wooden tray vs. white paper）、动作类型（hand it to the person vs. put it in the penholder）——模型每次均精确响应判别性关键词。<strong>(b) 复杂指令跟随：</strong>多步序列任务（将两个魔方依次叠放成两层；将红色和黄色彩椒从左到右依次摆放）中，模型自动分解并生成时序连贯的执行序列，无需显式子任务提示。</figcaption>
+    </figure>
+
+    <h3>Ablations 与零样本鲁棒性</h3>
+    <p>在 RoboTwin-IF 基准零样本评测中，尽管 Qwen-RobotWorld 训练时仅混入少量开源 RoboTwin 数据，仍展现出强劲的零样本性能与稳定的多视角一致性。与 LVP 和 Cosmos2.5-14B 对比，LVP 更多出现任务未完成执行，Cosmos2.5-14B 在复杂指令下动作-结果对齐更弱，而 Qwen-RobotWorld 在保持正确物体/动作对应和目标达成方面更一致。跨领域泛化（人到机器人迁移、自动驾驶、室内导航）进一步验证语言条件状态迁移函数在跨形态与跨场景的通用性。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性 · Limitations</h2>
+    <div class="note"><b>Note：</b>论文正文无专门的 Limitations 节。以下各点：★ 标注为论文明确陈述，☆ 标注为从设计或结果推断（inferred from design/results）。</div>
+    <details class="lim" open><summary>★ 常识评分受输出分辨率制约</summary><p>论文在 WorldModelBench 讨论中明确指出："the common-sense gap [is] attributable to our lower output resolution"——Qwen-RobotWorld 以低于通用视频生成器的输出分辨率运行，导致 VBench 像素级质量分（Aesthetic、Imaging quality）偏低，尽管此分辨率已足够下游机器人控制任务使用。</p></details>
+    <details class="lim"><summary>★ 长程行为泛化仍有差距</summary><p>在 DreamGen Bench 的 GR1-Behavior IF 子集，Qwen-RobotWorld（0.832）略逊于 LVP（0.889）与 GigaWorld（0.884）。论文明确将其列为"a direction for further improvement"，表明长时序行为泛化尚未达到最优水平。</p></details>
+    <details class="lim"><summary>☆ 依赖高质量语言标注（推断）</summary><p>EWK 采用五层分级标注框架，由 Qwen2.5-VL 自动生成后经人工审核和迭代提示精调，整个标注流水线对模型质量高度依赖。自动标注中偶发的视角描述不一致或物理反馈缺失，会通过质量过滤回流重标注，但仍可能引入系统性偏差（inferred from design of the annotation pipeline）。</p></details>
+    <details class="lim"><summary>☆ 跨领域覆盖不均衡（推断）</summary><p>EWK 中操作数据约 5.9M（约 68.6%），自动驾驶约 200K（2.3%），室内导航 6K+，Human-to-Robot 数据通过自动 MANO 流水线生成。导航和驾驶域的相对稀疏可能导致这些场景的生成质量不如操作场景（inferred from data statistics）。</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · for study reference only<br>
+    原文 / Tech Report: <a href="https://qwen.ai/blog?id=qwen-robotworld">https://qwen.ai/blog?id=qwen-robotworld</a>
+  </div>
+</footer>
+
+</body>
+</html>

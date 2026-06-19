@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen-RobotNav：面向智能体导航系统的可扩展导航模型</title>
+<meta name="keywords" content="具身导航, vision-and-language navigation, 多任务导航, task-adaptive observation encoding, agentic navigation, VLN, object-goal navigation, 目标追踪, autonomous driving, Qwen3-VL">
+<meta name="description" content="Qwen-RobotNav 是基于 Qwen3-VL 构建的可扩展导航模型，通过参数化观测接口统一指令跟随、目标搜索、目标追踪和自动驾驶等多任务导航，在 VLN-CE、EVT-Bench、HM3D 等主流基准上达到最新最优结果。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:40px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:30px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:28px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · 技术报告 2026</span>
+    <h1>Qwen-RobotNav：面向智能体导航系统的可扩展导航模型</h1>
+    <div class="sub">将多任务导航重新定义为「观测上下文建模」问题的统一导航基础模型</div>
+    <div class="authors">Qwen Team（Jiazhao Zhang, Gengze Zhou, Hale Yin, Yiyang Huang 等） · 2026-06-17</div>
+    <p class="lead">
+      Qwen-RobotNav 基于 Qwen3-VL 构建，通过参数化观测编码接口统一处理指令跟随、目标搜索、目标追踪和自动驾驶等多类导航任务，无需推理时重新训练即可动态切换任务模式与观测策略。
+      在 15.6M 样本上联合训练后，模型在 VLN-CE、EVT-Bench、HM3D、NAVSIM 等主流基准均达到最新最优水平；
+      结合上层 LLM Planner 构建的智能体导航系统，在三项 Embodied Question Answering 基准上同样刷新记录。
+    </p>
+    <div class="meta">
+      <span>技术报告 · June 2026</span>
+      <span>模型规模：2B → 8B</span>
+      <span>训练数据：15.6M 样本</span>
+      <span><a href="https://qwen.ai/blog?id=qwen-robotnav">博客 / Blog</a></span>
+      <span><a href="https://github.com/QwenLM/Qwen-RobotNav">GitHub</a></span>
+    </div>
+    <div class="kw">
+      <span>具身导航</span>
+      <span>vision-and-language navigation</span>
+      <span>多任务导航</span>
+      <span>task-adaptive observation encoding</span>
+      <span>agentic navigation</span>
+      <span>VLN</span>
+      <span>object-goal navigation</span>
+      <span>目标追踪</span>
+      <span>autonomous driving</span>
+      <span>Qwen3-VL</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机</h2>
+    <p class="lead">
+      具身导航跨越了极为多样的任务家族——指令跟随、目标导航、目标追踪、自动驾驶——它们共享同一套感知-规划骨干，
+      却对如何消费视觉流有着根本不同的策略需求。
+      现有统一导航模型（如 NavFoM、ABot-N0）采用固定的观测上下文策略，无法在推理时被外部代理重新配置；
+      不同任务需要截然不同的时间上下文：指令跟随需要数十步的全局历史以重新参考远端地标，
+      而目标追踪则几乎只依赖最近几帧。
+    </p>
+    <blockquote>
+      "We reframe the central challenge of multi-task navigation as <em>observation context modelling</em> rather than architecture design."
+    </blockquote>
+    <figure>
+      <img src="img/teaser.webp" alt="Qwen-RobotNav 系统概览与七项能力展示">
+      <figcaption>
+        <strong>图 1（第 1 页）：</strong>Qwen-RobotNav 系统全景。左侧展示 15.6M 多样化训练数据来源（合成视频、真实视频、生成视频）；
+        中间为两层架构：上层 LLM Planner（如 Qwen3.6-Plus）通过 Navigation Context Protocol 动态调度任务模式与观测配置，
+        下层 Qwen-RobotNav 高频输出路径点；右侧雷达图对比多个基准上的性能；
+        底部展示七项核心能力：点目标导航、目标追踪、指令跟随、带记忆的长时任务、具身问答、自动驾驶和模型规模扩展。
+      </figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>76.5%</b><small>VLN-CE RxR SR（Val-Unseen 全景）</small></div>
+      <div><b>90.0%</b><small>EVT-Bench STT 追踪率（最高）</small></div>
+      <div><b>75.6%</b><small>HM3D v2 ObjNav SR（最优）</small></div>
+      <div><b>91.4</b><small>NAVSIM PDMS 自动驾驶分</small></div>
+    </div>
+    <figure>
+      <img src="img/benchmark-summary.webp" alt="各基准性能对比概览">
+      <figcaption>
+        <strong>图 2（第 2 页，Figure 1）：</strong>基准汇总图。Qwen-RobotNav-4B 和 8B 在指令跟随（VLN-CE、VLNVerse）、
+        目标搜索（MP3D、HM3D-OVON）、目标追踪（EVT-Bench）、具身问答（HM-EQA、MT-EQA、EXPRESS-Bench）和
+        自动驾驶（NAVSIM）五个维度均达到最优或竞争性性能，奖杯图标标注各组最佳方法。
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法</h2>
+    <p class="lead">
+      Qwen-RobotNav 将所有导航任务统一为路径点轨迹预测，并通过两个正交维度的参数化接口暴露可配置的观测策略：
+      （1）<strong>多任务模式</strong>（VLN / PointNav / ObjNav / Tracking）选择导航行为；
+      （2）<strong>可控观测参数</strong>（视觉 token 预算 <em>B</em>、时间衰减 <em>γ</em>、per-camera 权重 <em>w<sub>c</sub></em>、帧采样模式）
+      控制视觉历史编码方式。训练时对所有参数进行随机化，确保推理时无需任何架构修改即可适应任意配置。
+    </p>
+    <figure>
+      <img src="img/architecture.webp" alt="Qwen-RobotNav 模型架构图">
+      <figcaption>
+        <strong>图 3（第 4 页，Figure 2）：</strong>Qwen-RobotNav 整体架构。
+        <em>上：</em>智能体导航系统中，上层 LLM Planner 将长时任务分解为子目标，通过任务自适应上下文参数（token 预算 <em>B</em>、时间衰减 <em>γ</em>、相机权重 <em>w<sub>c</sub></em>、帧采样模式）控制 Qwen-RobotNav。
+        <em>下：</em>Qwen-RobotNav 接收多路 RGB 图像、嵌入式提示和导航指令；
+        Task-Adaptive Observation Encoding 模块跨相机和时间步分配 token；
+        Viewpoint and Temporal Identification 模块插入自然语言视角与时间戳标签；
+        Qwen3-VL backbone 处理视觉-语言序列；轻量 MLP Action Head 输出 K=8 个路径点 (x, y, θ)。
+      </figcaption>
+    </figure>
+
+    <h3>Task-Adaptive Observation Encoding</h3>
+    <p>
+      导航是部分可观测下的序列决策，不同任务对历史帧的需求截然不同。
+      Qwen-RobotNav 通过时间权重函数
+      <em>ω<sub>t</sub> = exp(γ · t/(T'−1))</em> 对各帧分配 token，
+      再结合 per-camera 重要性权重 <em>w<sub>c</sub></em> 构建二维权重矩阵 <strong>W[t,c]</strong>，
+      最后用受约束分配算法在预算 <em>B</em>（2048–4096）内按比例分配每张图片的像素分辨率。
+      γ=0 对应均匀采样，γ 越大越向最近帧集中——当 γ=2 时，最新帧获得最旧帧约 7.4 倍的 token 预算。
+      训练时所有参数独立随机采样，令模型对任意推理配置均具鲁棒性。
+    </p>
+
+    <h3>Viewpoint and Temporal Identification</h3>
+    <p>
+      多相机、多时间步的视觉 token 在输入 LLM 前本质上是不可区分的。
+      Qwen-RobotNav 在每个时间步组前插入自然语言标签（如 <code>Time step 1 Front View &lt;image&gt; Right View &lt;image&gt; ...</code>），
+      完全依赖 Qwen3-VL 已有的词汇理解能力，无需额外参数或嵌入，同时保留了开放世界语言先验。
+    </p>
+
+    <h3>Embodiment-Aware Prompt Design</h3>
+    <p>
+      不同物理平台（室内移动机器人 vs. 自动驾驶汽车）通过系统提示中的自然语言前言区分：
+      室内机器人以 <code>"Imagine you are a <strong>robot</strong> programmed for navigation tasks"</code> 开始，
+      自动驾驶以 <code>"Imagine you are a <strong>car</strong> programmed for autonomous driving"</code> 开始。
+      支持新平台仅需定义新提示模板，无需任何架构修改。
+    </p>
+
+    <h3>联合训练策略</h3>
+    <p>
+      训练目标为轨迹回归损失与视觉-语言对齐损失的组合：
+      <em>L = L<sub>traj</sub> + λ L<sub>VL</sub></em>（λ=1.0）。
+      语料库由 85% 导航轨迹数据和 15% 视觉-语言推理数据混合组成，
+      联合训练防止模型退化为纯反应式动作序列预测器，保持开放世界感知能力。
+      8B 模型以批量大小 256 共训练 <strong>2,816 H100 GPU 小时</strong>。
+    </p>
+
+    <figure>
+      <img src="img/training-data.webp" alt="训练数据分布">
+      <figcaption>
+        <strong>图 4（第 10 页，Figure 5）：</strong>训练数据分布。左：各数据集样本量，VLN-CE Multi-View（3.9M）最大；
+        右：按任务类别聚合，共 15.6M 样本——指令跟随占 38.4%，自动驾驶 20.6%，目标导航 19.1%，目标追踪 9.5%，
+        Vision-Language SFT 6.6%，导航推理 5.6%。
+      </figcaption>
+    </figure>
+
+    <h3>智能体导航系统（Agentic Navigation）</h3>
+    <p>
+      Qwen-RobotNav 作为可被外部调用的导航执行器暴露工具接口：
+      <em>W<sub>i</sub> = nav_qwennav(L<sub>i</sub>, τ<sub>i</sub>, Φ<sub>i</sub>)</em>，
+      其中 L<sub>i</sub> 为子目标指令、τ<sub>i</sub> 为任务模式、Φ<sub>i</sub> 为观测配置。
+      上层 LLM Planner（Qwen3.6-Plus）将长时任务分解为子目标并动态切换模式和配置；
+      Navigation Harness 将每次导航执行结果压缩为轨迹证据记录（subgoal、progress、salient landmarks、key_frames），
+      维护跨回合的证据笔记本，支持长时推理与上下文压缩。
+    </p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验</h2>
+    <p class="lead">
+      评测覆盖视觉-语言导航（VLN-CE R2R/RxR、VLNVerse、VLN-PE）、开放词汇目标导航（MP3D、HM3D-OVON）、
+      主动视觉追踪（EVT-Bench STT）、具身问答（HM-EQA、MT-EQA、EXPRESS-Bench）和自动驾驶（NAVSIM、AlpaSim）五大类别，
+      与 NavFoM、ABot-N0 等导航基础模型及各专项方法对比。
+    </p>
+
+    <h3>VLN-CE 指令跟随</h3>
+    <table>
+      <tr><th>方法</th><th>R2R SR↑</th><th>R2R SPL↑</th><th>RxR SR↑</th><th>RxR nDTW↑</th></tr>
+      <tr><td>NavFoM（全景）</td><td>72.1</td><td>61.7</td><td>64.4</td><td>65.8</td></tr>
+      <tr><td>ABot-N0（全景）</td><td>70.8</td><td>64.3</td><td>69.3</td><td>–</td></tr>
+      <tr><td>AstraNav-World（全景）</td><td>73.9</td><td>67.9</td><td>72.9</td><td>–</td></tr>
+      <tr><td><strong>Qwen-RobotNav-4B（全景）</strong></td><td><strong>77.2</strong></td><td>69.5</td><td>75.2</td><td>71.9</td></tr>
+      <tr><td class="good"><strong>Qwen-RobotNav-8B（全景）</strong></td><td class="good"><strong>78.5</strong></td><td class="good"><strong>72.1</strong></td><td class="good"><strong>76.5</strong></td><td class="good"><strong>72.5</strong></td></tr>
+    </table>
+    <p>
+      全景设置下，Qwen-RobotNav-8B 在 R2R 达到 <strong>72.1% SR 和 76.5% SR（RxR）</strong>，
+      分别超越 NavFoM 10.4% SR 和 ABot-N0 5.7% SR（R2R）。
+      单目设置下，Qwen-RobotNav-4B 在 R2R 达到 66.9% SR 和 60.5% SPL，
+      超越最强单目基线 DualVLN 2.6% SR 和 2.0% SPL。
+    </p>
+
+    <h3>目标导航（ObjNav）</h3>
+    <table>
+      <tr><th>方法</th><th>MP3D SR↑</th><th>HM3D v2 SR↑</th><th>HM3D-OVON Seen SR↑</th><th>HM3D-OVON Unseen SR↑</th></tr>
+      <tr><td>CogNav</td><td>46.6</td><td>–</td><td>–</td><td>–</td></tr>
+      <tr><td>ABot-N0</td><td>–</td><td>–</td><td>55.4</td><td>54.0</td></tr>
+      <tr><td>NavFoM</td><td>–</td><td>–</td><td>45.4</td><td>45.2</td></tr>
+      <tr><td><strong>Qwen-RobotNav-4B</strong></td><td class="good"><strong>52.2</strong></td><td class="good"><strong>75.6</strong></td><td class="good"><strong>57.7</strong></td><td>53.1</td></tr>
+      <tr><td>Qwen-RobotNav-8B</td><td>48.8</td><td>71.2</td><td>56.1</td><td>51.2</td></tr>
+    </table>
+    <p>
+      HM3D v2 上，Qwen-RobotNav-4B 达到 <strong>75.6% SR</strong>，距离目标仅 <strong>1.72 m</strong>，
+      超越即便是基于 HM3D v1（更简单版本）的所有先前方法。
+      在 HM3D-OVON（开放词汇），Qwen-RobotNav-4B 仅使用单目前向摄像头便超越使用全景多视图的 ABot-N0，
+      在 Seen 和 Synonyms 两个划分上分别领先 2.4% 和 4.7% SR。
+    </p>
+
+    <h3>目标追踪（EVT-Bench STT）</h3>
+    <table>
+      <tr><th>方法</th><th>TR↑（追踪率）</th><th>CR↓（碰撞率）</th><th>SR↑（成功率）</th></tr>
+      <tr><td>TrackVLA++</td><td>81.0</td><td>2.10</td><td>86.0</td></tr>
+      <tr><td>NavFoM</td><td>80.5</td><td>–</td><td>85.0</td></tr>
+      <tr><td>ABot-N0</td><td>87.6</td><td>8.54</td><td>86.9</td></tr>
+      <tr><td class="good"><strong>Qwen-RobotNav-4B</strong></td><td class="good"><strong>90.0</strong></td><td>6.40</td><td>77.4</td></tr>
+      <tr><td>Qwen-RobotNav-8B</td><td>89.7</td><td class="good"><strong>5.70</strong></td><td>78.6</td></tr>
+    </table>
+    <p>
+      Qwen-RobotNav-4B 以 <strong>90.0% TR</strong> 在所有方法中取得最高追踪率，
+      比 ABot-N0 高 2.4%、比 NavFoM 高 9.5%；
+      8B 版本碰撞率最低（5.70%）。成功率略低于专项追踪器（ABot-N0 86.9%），
+      论文认为广泛多任务训练引入了更保守的停止策略——追踪行为与停止判断之间存在权衡。
+    </p>
+
+    <h3>具身问答（EQA）</h3>
+    <table>
+      <tr><th>方法</th><th>HM-EQA Acc↑</th><th>HM-EQA Steps↓</th><th>MT-EQA Acc↑</th><th>EXPRESS-Bench LLM Score↑</th></tr>
+      <tr><td>FAST-EQA</td><td>69.2</td><td>0.65</td><td>50.5</td><td>68.7</td></tr>
+      <tr><td>Qwen3.5-Plus+QwenRobotNav-8B</td><td>74.1</td><td>0.17</td><td>52.1</td><td>77.66</td></tr>
+      <tr><td class="good"><strong>Qwen3.6-Plus+QwenRobotNav-8B</strong></td><td class="good"><strong>76.7</strong></td><td class="good"><strong>0.15</strong></td><td class="good"><strong>54.4</strong></td><td class="good"><strong>79.27</strong></td></tr>
+    </table>
+    <p>
+      智能体系统在 EQA 三项基准全面超越现有方法。与 FAST-EQA 对比：HM-EQA +7.5 点，MT-EQA +3.9 点，EXPRESS-Bench +10.57 分，
+      同时导航步数减少 <strong>77%</strong>（0.65 → 0.15）。
+    </p>
+
+    <h3>自动驾驶（NAVSIM）</h3>
+    <table>
+      <tr><th>方法</th><th>NC↑</th><th>DAC↑</th><th>TTC↑</th><th>PDMS↑</th></tr>
+      <tr><td>NavFoM</td><td>97.7</td><td>93.5</td><td>92.3</td><td>84.3</td></tr>
+      <tr><td>ReCogDrive</td><td>97.9</td><td>97.3</td><td>94.9</td><td>90.8</td></tr>
+      <tr><td>ReflectDrive</td><td>97.7</td><td>99.3</td><td>93.5</td><td>91.1</td></tr>
+      <tr><td class="good"><strong>Qwen-RobotNav-4B</strong></td><td class="good"><strong>99.8</strong></td><td>90.9</td><td class="good"><strong>98.5</strong></td><td class="good"><strong>91.4</strong></td></tr>
+      <tr><td>Qwen-RobotNav-8B</td><td class="good">99.8</td><td>96.9</td><td>98.2</td><td>90.9</td></tr>
+    </table>
+    <p>
+      Qwen-RobotNav-4B 在 NAVSIM 达到 <strong>91.4 PDMS</strong>，超越 NavFoM 7.1 分；
+      NC（99.8）和 TTC（98.5）均领先所有方法，显示出强安全性约束遵从能力。
+    </p>
+
+    <h3>数据规模与消融分析</h3>
+    <figure>
+      <img src="img/scaling-ablation.webp" alt="数据规模扩展行为与 token 预算/时间衰减消融">
+      <figcaption>
+        <strong>图 5（第 26 页，Figure 14–15）：</strong>
+        <em>上：</em>数据比例从 12.5% 增至 100%，指令跟随（VLN-CE RxR）和驾驶（NAVSIM）收益最显著；追踪任务（EVT-Bench）在较少数据下即饱和。
+        <em>下左：</em>固定 γ=2.0 时，token 预算 B 从 2048 增至 4608，SR 从 70.8% 升至 74.6%，OSR 在 B=3584 时达峰值 82.7%；
+        <em>下右：</em>固定 B=3072 时，γ 从 0.5 增至 3.5，OSR 持续改善（78.8% → 82.6%），SR 在 γ=3.0 时达峰 72.5%。
+      </figcaption>
+    </figure>
+    <p>
+      消融结论：保留更多视觉上下文整体有益，但超出某阈值后分配不当会带来收益递减；
+      较大 γ 使模型更聚焦近期帧、增强场景解析能力，但代价是丢失早期历史上下文，
+      对严格依赖全局历史的成功率指标产生轻微负面影响。
+    </p>
+
+    <h3>真实机器人部署</h3>
+    <p>
+      Qwen-RobotNav 在四足机器人（Unitree Go2）上实现零样本迁移：
+      在真实展览大厅（21.78 m 路程）通过纯自然语言指令完成跨区域导航，
+      并在接到「倒退」指令时精确沿原路返回起始位置。
+      在室内公寓场景，模型在卧室、客厅、浴室间多房间穿行，响应精细空间指令。
+      推理时延：远程服务器 196 ms（5.1 Hz），板端 TensorRT 加速 204 ms（4.9 Hz）。
+    </p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性</h2>
+    <div class="note">
+      <b>说明：</b>论文无独立 Limitations 章节。以下第 1 条为作者在实验分析中明确陈述的权衡，第 2–4 条为从设计与实验结果推断的局限（标注「推断」）。
+    </div>
+
+    <details class="lim" open>
+      <summary>目标追踪的成功率-追踪率权衡（作者明确指出）</summary>
+      <p>
+        EVT-Bench 上追踪率（TR）最高，但成功率（SR）低于专项追踪器 ABot-N0（77.4% vs. 86.9%）和 TrackVLA++（77.4% vs. 86.0%）。
+        论文原文："We hypothesise that the broader multi-task training of Qwen-RobotNav introduces a trade-off where the model maintains tighter following behaviour (superior TR) while being more conservative in declaring episode success."
+      </p>
+    </details>
+
+    <details class="lim">
+      <summary>路径效率（SPL）低于专项探索模型（作者在 ObjNav 分析中指出）</summary>
+      <p>
+        HM3D-OVON 上，Qwen-RobotNav 的 SPL 低于 NavFoM 和 ABot-N0，反映骨架探索训练轨迹倾向于逐房间系统性搜索（提高目标发现率），但路径更长。
+        论文原文："The lower SPL of Qwen-RobotNav relative to NavFoM and ABot-N0 reflects a reach-first exploration behaviour."
+      </p>
+    </details>
+
+    <details class="lim">
+      <summary>AlpaSim 封闭循环自动驾驶泛化不足（推断）</summary>
+      <p>
+        在 AlpaSim（PhysicalAI-AV NuRec 数据集）零样本评测中，Qwen-RobotNav-4B/8B 的 AlpaSim Score（0.15/0.17）
+        显著低于专项模型 Alpamayo-R1-10B（0.72），Off-Road Rate 也更高。
+        这表明跨场景迁移至专用封闭循环自动驾驶仍存在显著差距，需要领域适应。
+      </p>
+    </details>
+
+    <details class="lim">
+      <summary>token 分配算法的理论最优性有限（作者注释）</summary>
+      <p>
+        论文原文："We believe this strategy could be further improved by a more principled token allocation algorithm."
+        当前 token 预算分配基于经验启发式，并非最优；消融实验也显示过大预算带来收益递减甚至略有下降。
+      </p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · Qwen-RobotNav Technical Report · for study reference only<br>
+    原文 / Report: <a href="https://qwen.ai/blog?id=qwen-robotnav">https://qwen.ai/blog?id=qwen-robotnav</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/QwenLM/Qwen-RobotNav">GitHub: QwenLM/Qwen-RobotNav</a>
+  </div>
+</footer>
+
+</body>
+</html>

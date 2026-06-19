@@ -1,0 +1,11 @@
+{
+  "slug": "next-latent-wm",
+  "title": "Next-Latent Prediction Transformers Learn Compact World Models",
+  "arxiv_id": "2511.05963",
+  "url": "https://arxiv.org/abs/2511.05963",
+  "category": "理论与优化 · Theory & Optimization",
+  "keywords": ["world model", "next-latent prediction", "belief state", "POMDP", "speculative decoding", "transformer", "潜在状态预测", "压缩表征", "循环归纳偏置"],
+  "summary_zh": "NextLat 在标准 next-token 训练之外增加潜在状态自监督预测，理论证明隐藏状态收敛至 belief states，令 Transformer 学会紧凑世界模型，并在推理速度（3.3×）、规划、推理和语言建模上全面提升，同时不改变架构和推理流程。",
+  "date": "2026-06-19",
+  "source": "arxiv-html"
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "qwen-robotmanip",
+  "title": "Qwen-RobotManip Technical Report: Alignment Unlocks Scale for Robotic Manipulation Foundation Models",
+  "arxiv_id": "",
+  "url": "https://qwen.ai/blog?id=qwen-robotmanip",
+  "category": "机器人 · Robotics",
+  "keywords": ["VLA", "机器人操作", "cross-embodiment alignment", "人机数据合成", "flow matching", "Diffusion Transformer", "迁移泛化", "指令跟随", "OOD evaluation", "基础模型"],
+  "summary_zh": "Qwen-RobotManip 以「先对齐、后扩展」为核心，在表示、运动、行为三维引入统一对齐框架，基于 ~38,100 小时全开源数据构建可泛化 VLA 基础模型，在多项 OOD 基准上大幅超越 π₀.₅ 等 SOTA，并在 RoboChallenge Table30-v1 Generalist Track 排名第一。",
+  "date": "2026-06-19",
+  "source": "https://qwen.ai/blog?id=qwen-robotmanip"
+}

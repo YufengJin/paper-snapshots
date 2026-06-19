@@ -1,0 +1,22 @@
+{
+  "slug": "spline-policy",
+  "title": "Spline Policy: A Structured Representation for Robot Policies",
+  "arxiv_id": "2606.07386",
+  "url": "https://arxiv.org/abs/2606.07386",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "Spline Policy",
+    "模仿学习",
+    "movement primitive",
+    "样条轨迹表示",
+    "flow field",
+    "不确定性传播",
+    "机器人操控",
+    "imitation learning",
+    "action chunk",
+    "trajectory representation"
+  ],
+  "summary_zh": "Spline Policy（SP）将机器人策略的动作块输出替换为样条参数，在保持策略主干不变的前提下，赋予策略紧凑轨迹解码、约束处理、不确定性传播，以及基于解析距离场的闭环流场执行等结构化能力，在仿真操控基准和真实机器人任务中验证了其与 Diffusion、Flow Matching、VLA 等多种主干的兼容性。",
+  "date": "2026-06-19",
+  "source": "pdf"
+}

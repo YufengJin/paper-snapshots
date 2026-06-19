@@ -1,0 +1,22 @@
+{
+  "slug": "qwen-robotworld",
+  "title": "Qwen-RobotWorld Technical Report: Unifying Embodied World Modeling through Language-Conditioned Video Generation",
+  "arxiv_id": "",
+  "url": "https://qwen.ai/blog?id=qwen-robotworld",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "embodied world model",
+    "language-conditioned video generation",
+    "Double-stream MMDiT",
+    "具身智能",
+    "human-to-robot transfer",
+    "EWK dataset",
+    "机器人操作",
+    "多视角一致性生成",
+    "自动驾驶",
+    "progressive curriculum training"
+  ],
+  "summary_zh": "Qwen-RobotWorld 以自然语言为统一动作接口，通过60层双流MMDiT扩散模型将机器人操作、自动驾驶、室内导航和人到机器人迁移统一为语言条件视频生成任务，配合8.6M视频-文本对的EWK数据集和通用+专家渐进课程训练，在EWMBench和DreamGen Bench均排名第一。",
+  "date": "2026-06-19",
+  "source": "https://qwen.ai/blog?id=qwen-robotworld"
+}

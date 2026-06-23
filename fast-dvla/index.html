@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--
+  PAPER POSTER TEMPLATE — self-contained, no dependencies. 中文海报，无 EN 版本。
+  Fill every {{PLACEHOLDER}} and the section bodies. Reference figures as img/<name>.png.
+  Body text in 中文; keep academic terms / names / metrics / quoted phrases in English.
+  REQUIRED: <meta name="keywords"> + visible .kw chips + arXiv link (header & footer).
+  Accent color: change --acc to re-theme (e.g. #5a5953 blue, #5a5953 teal, #b45309 amber).
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast-dVLA: Accelerating Discrete Diffusion VLA to Real-Time Performance</title>
+<meta name="keywords" content="discrete diffusion VLA, KV cache, block-wise diffusion, 推理加速, 机器人操控, asymmetric distillation, pipelined decoding, 实时控制">
+<meta name="description" content="Fast-dVLA 通过分块扩散与 KV 缓存复用，将离散扩散 VLA 的推理速度提升 2.8–4.1×，首次达到实时控制频率（30 Hz），同时保持 SOTA 成功率。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:42px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · cs.RO 2026</span>
+    <h1>Fast-dVLA</h1>
+    <div class="sub">Accelerating Discrete Diffusion VLA to Real-Time Performance</div>
+    <div class="authors">Wenxuan Song*, Jiayi Chen*, Shuai Chen*, Jingbo Wang, Pengxiang Ding, Han Zhao, Yikai Qin, Xinhu Zheng, Donglin Wang, Yan Wang†, Haoang Li† &nbsp;·&nbsp; HKUST(GZ)、ShanghaiTech、上海技物所、AIR Tsinghua、Westlake、Zhejiang University</div>
+    <p class="lead">离散扩散 VLA（dVLA）在多模态对齐上优于流匹配架构，但推理速度远低于机器人实时控制所需的 30 Hz。Fast-dVLA 揭示了 dVLA 隐含的逐块自回归解码趋势，并借此设计分块扩散注意力与 KV 缓存复用机制，配合扩散强迫实现块间并行解码，最终以最低 2.8×、最高 4.1× 的加速比将 dVLA 推进实时域，同时保持 SOTA 级别的成功率。</p>
+    <div class="meta">
+      <span>arXiv 2026-04</span>
+      <span>CALVIN · LIBERO · SimplerEnv · 真实双臂机器人</span>
+      <span>Dream-VLA / DD-VLA / UD-VLA</span>
+      <!-- REQUIRED: link back to the source paper. Prefer arXiv abs. Keep the footer link too. -->
+      <span><a href="https://arxiv.org/abs/2603.25661">📄 arXiv:2603.25661</a></span>
+      <span><a href="https://chris1220313648.github.io/Fast-dVLA/">🌐 Project Page</a></span>
+    </div>
+    <!-- REQUIRED: 6-10 search keywords (mixed 中英 academic terms); mirror in <meta name=keywords> -->
+    <div class="kw">
+      <span>discrete diffusion VLA</span>
+      <span>KV cache reuse</span>
+      <span>block-wise diffusion</span>
+      <span>推理加速</span>
+      <span>机器人操控</span>
+      <span>asymmetric distillation</span>
+      <span>pipelined decoding</span>
+      <span>实时控制</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · Motivation</a>
+  <a href="#method">2 · Method</a>
+  <a href="#exp">3 · Experiments</a>
+  <a href="#limit">4 · Limitations</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> Motivation</h2>
+    <p class="lead">离散扩散 VLA（dVLA，如 Dream-VLA、DD-VLA）通过并行迭代去噪输出动作 token，天然继承 VLM 的预训练知识且无需独立动作头；但其双向注意力机制导致每步前向传播均需重新计算 Key-Value（KV）表示，无法复用 KV 缓存，从而产生极低的单次前向效率。当前 dVLA 的执行频率远低于物理机器人所需的 <strong>30 Hz</strong> 实时控制标准。</p>
+    <blockquote>"current dVLAs still suffer from a fundamental limitation. Their inference speed is slow, with an execution frequency that is far below the real-time requirements of physical robotic systems (typically around 30 Hz)."</blockquote>
+    <figure>
+      <img src="img/teaser.webp" alt="Speed/Success Rate trade-off">
+      <figcaption><strong>图 1 速度与成功率权衡。左（同类对比）：</strong>在 DD-VLA 和 Dream-VLA 两个基底模型上，Fast-dVLA 分别实现 <strong>2.6×</strong> 和 <strong>3.2× 加速</strong>，同时成功率持平或略升，优于 BlockDiff 和 Fast-dLLM 等方案。<strong>右（跨范式对比）：</strong>Fast-dVLA 在 LIBERO 上同时达到与连续流匹配方法（π₀.₅）相当的频率（~30 Hz）和更高的成功率，兼具 dVLA 的内在优势。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>4.1×</b><small>最大推理加速比（DD-VLA on LIBERO）</small></div>
+      <div><b>30 Hz</b><small>达到实时控制频率</small></div>
+      <div><b>96.6%</b><small>LIBERO 平均成功率（Fast-dVLA + DD-VLA）</small></div>
+      <div><b>4.54</b><small>CALVIN ABCD→D avg. len.（UD-VLA + Fast-dVLA）</small></div>
+    </div>
+    <figure>
+      <img src="img/paradigms.webp" alt="Decoding paradigm comparison">
+      <figcaption><strong>图 2 四类离散解码范式对比。</strong>（a）自回归 VLA：每步一个 token，前向次数多但 forward 快；（b）dVLA：全序列一次并行去噪，forward 次数少但每次 forward 慢；（c）Block Diffusion：分块串行，适中；（d）Fast-dVLA（ours）：forward 次数少且每次 forward 快，<strong>综合推理速度最快</strong>，同时保留块间并行性。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> Method</h2>
+    <p class="lead">Fast-dVLA 的核心是将全序列双向注意力替换为<strong>分块因果注意力</strong>（block-wise causal attention），并结合<strong>扩散强迫</strong>（diffusion forcing）实现块间并行解码。训练时采用非对称蒸馏从已微调的双向 dVLA 高效迁移能力；推理时设计流水线并行调度算法，平衡解码可靠性与吞吐量。</p>
+
+    <h3>3.1 隐式块级自回归趋势的发现</h3>
+    <p>通过可视化 Dream-VLA 在不同去噪步骤中各 token 位置的解码概率（Figure 3），作者发现：尽管 dVLA 使用双向注意力，其解码过程在宏观上仍呈现<strong>从左到右的块级自回归模式</strong>——时间序列中靠前的动作块倾向于在更早的去噪迭代中被解码。这一观察源于两个原因：①dVLA 骨干初始化自自回归 VLM，天然保留了自回归特性；②不同时间步的动作存在固有的时序依赖。该发现表明，<em>经过微调的双向 dVLA 可被直接"强制"遵循分块扩散解码方式</em>。</p>
+
+    <h3>3.2 分块注意力与 KV 缓存复用</h3>
+    <p>将长度为 L 的动作 token 序列划分为 N 个等大小的块，每个块仅能 attend 到其之前所有块的 token（因果限制），同一块内 token 可互相 attend（块内双向）。一旦某块解码完成，其 KV 状态即<strong>固定不变</strong>，后续解码步骤可直接复用缓存的 KV，无需重新计算，彻底解决了双向注意力下 KV 随去噪步变化的问题（Figure 4b 验证了缓存相似度接近 1.0）。</p>
+    <p>为实现块间并行解码，论文借鉴扩散强迫思想，对不同块赋予单调递增的噪声水平（t₁ &lt; t₂ &lt; ⋯ &lt; tₙ）：靠前的块噪声更少（信息更完整），靠后的块仍高度遮蔽，从而允许模型在精化前序块的同时并发去噪后续块，实现块间并行而不损害时序一致性。</p>
+
+    <h3>3.3 非对称蒸馏（Asymmetric Distillation）</h3>
+    <p>直接从头训练代价高昂。论文提出从已任务微调的双向 dVLA（教师）蒸馏 Fast-dVLA（学生）：教师以<strong>全局视角</strong>（bidirectional attention，看到所有块）预测目标，学生以<strong>块因果视角</strong>（causal block attention，仅看到前缀块）逼近教师输出，二者结构共享但注意力模式不同——这种"不对称"使蒸馏损失 ℒ_AD 能高效传递教师的整体规划能力。实验显示，ℒ_AD 仅需约 <strong>2,000 步</strong>即可收敛，是从头训练所需步骤的约 1/10（Figure 8）。蒸馏采用 LoRA（rank=32），仅训练 LoRA 分支以保留骨干的视觉语言预训练知识。</p>
+
+    <h3>3.4 流水线并行解码（Pipelined Parallel Decoding）</h3>
+    <p>推理时维护一条动态增长的块流水线（Figure 6），区分"半激活"与"全激活"两种状态：当前一块的解码完成比例超过阈值 τ_add 时，新块被引入为半激活状态；当前一块完成比例超过 τ_act 时，新块升为全激活状态。全激活块采用<strong>置信度自适应的激进解码</strong>策略（按置信度排名，每步至少解码 ⌊剩余 token/n⌋ 个），兼顾吞吐与可靠性。</p>
+    <figure>
+      <img src="img/architecture.webp" alt="Pipelined parallel decoding">
+      <figcaption><strong>图 6 Fast-dVLA 流水线并行解码示意。</strong>各列代表一个动作块，各行代表一个解码时步 T（从下到上）。深色=已缓存，蓝色=全激活，浅色=半激活，白色=未激活。新块在前驱完成比例超 τ_add = 2/7 时引入，在超 τ_act = 4/7 时升级为全激活。块间并行推进使整体 KV 缓存利用率最大化。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> Experiments</h2>
+    <p class="lead">在 CALVIN（长时序操控）、LIBERO（4 个分套件）、SimplerEnv（真实视觉迁移）三个仿真 benchmark 以及真实双臂 AgileX 平台上评估。基底 dVLA 模型选取 Dream-VLA、DD-VLA（代表型 dVLA）和 UD-VLA（统一多模态 dVLA）。</p>
+
+    <h3>LIBERO：加速策略对比（RQ1）</h3>
+    <table>
+      <tr><th>方法</th><th>Spatial</th><th>Goal</th><th>Object</th><th>Long</th><th>Avg.</th><th>速度 (tok/s)</th></tr>
+      <tr><td>Dream-VLA</td><td>0.902</td><td>0.920</td><td>0.880</td><td>0.720</td><td>0.856</td><td>98.8 (×1.0)</td></tr>
+      <tr><td>+ Fast-dLLM</td><td>0.884</td><td>0.894</td><td>0.834</td><td>0.702</td><td>0.828</td><td>183.2 (×1.9)</td></tr>
+      <tr><td>+ Block Diffusion</td><td>0.918</td><td>0.904</td><td>0.886</td><td>0.722</td><td>0.858</td><td>181.7 (×1.8)</td></tr>
+      <tr><td><strong>+ Fast-dVLA (ours)</strong></td><td>0.912</td><td>0.920</td><td>0.902</td><td class="good">0.746</td><td class="good">0.870</td><td class="good">313.1 (×3.2)</td></tr>
+      <tr><td>DD-VLA</td><td>0.972</td><td>0.986</td><td>0.974</td><td>0.920</td><td>0.963</td><td>152.1 (×1.5)</td></tr>
+      <tr><td>+ Fast-dLLM</td><td>0.940</td><td>0.952</td><td>0.948</td><td>0.898</td><td>0.935</td><td>312.5 (×3.2)</td></tr>
+      <tr><td>+ Block Diffusion</td><td>0.976</td><td>0.986</td><td>0.972</td><td>0.932</td><td>0.967</td><td>322.1 (×3.3)</td></tr>
+      <tr><td><strong>+ Fast-dVLA (ours)</strong></td><td>0.970</td><td class="good">0.988</td><td>0.976</td><td>0.928</td><td class="good">0.966</td><td class="good">402.7 (×4.1)</td></tr>
+    </table>
+
+    <h3>CALVIN ABCD→D：与 SOTA 跨范式对比（RQ2，Table 3）</h3>
+    <table>
+      <tr><th>方法</th><th>1/5</th><th>2/5</th><th>3/5</th><th>4/5</th><th>5/5</th><th>Avg. Len.</th></tr>
+      <tr><td>LLaDA-VLA</td><td>0.956</td><td>0.878</td><td>0.795</td><td>0.739</td><td>0.645</td><td>4.01</td></tr>
+      <tr><td>UP-VLA</td><td>0.962</td><td>0.921</td><td>0.879</td><td>0.842</td><td>0.812</td><td>4.42</td></tr>
+      <tr><td>MDT</td><td>0.986</td><td>0.958</td><td>0.916</td><td>0.862</td><td>0.801</td><td>4.52</td></tr>
+      <tr><td><strong>UD-VLA + Fast-dVLA (ours)</strong></td><td>0.984</td><td>0.952</td><td>0.922</td><td>0.870</td><td class="good">0.812</td><td class="good">4.54</td></tr>
+    </table>
+
+    <h3>SimplerEnv WidowX 机器人任务（RQ2，Table 4）</h3>
+    <table>
+      <tr><th>方法</th><th>Spoon on Towel</th><th>Carrot on Plate</th><th>Stack Green Block</th><th>Eggplant in Basket</th><th>Avg. Success</th><th>Speed (tok/s)</th></tr>
+      <tr><td>GR00T-N1</td><td>62.5</td><td>45.8</td><td>16.7</td><td>20.8</td><td>36.5</td><td>—</td></tr>
+      <tr><td>DDVLA</td><td>70.8</td><td>29.2</td><td>62.5</td><td>20.8</td><td>37.5</td><td>152.8</td></tr>
+      <tr><td>Dream-VLA</td><td>45.8</td><td>45.8</td><td>25.0</td><td>100.0</td><td>51.0</td><td>100.1</td></tr>
+      <tr><td>+ Block Diffusion</td><td>83.3</td><td>66.7</td><td>45.8</td><td>95.8</td><td>55.2</td><td>226.4</td></tr>
+      <tr><td><strong>+ Fast-dVLA (ours)</strong></td><td class="good">83.3</td><td class="good">54.1</td><td class="good">62.5</td><td class="good">54.1</td><td class="good">59.3 (+16.2%↑)</td><td class="good">366.4</td></tr>
+    </table>
+
+    <h3>真实世界实验（RQ3）</h3>
+    <figure>
+      <img src="img/realworld.webp" alt="Real-world experiment results">
+      <figcaption><strong>图 7 真实机器人实验结果。</strong>在双臂 AgileX 平台上评估三项任务：(a) 传送带拣取（Conveyor Picking）——以每分钟成功抓取次数衡量，Fast-dVLA 达到 <strong>13.0 次/分钟</strong>，约为 Dream-VLA（7.0）的 2 倍，π₀-FAST（5.0）的 2.6 倍；(b) 蔬菜归类（Vegetables Stowing）——成功率 57.5%，接近 Dream-VLA 的 45.0%，同时将完成时间从 ~15s 压缩至 ~14s；(c) 蔬菜取用（Vegetables Retrieving）——成功率 60.0%，维持在 Dream-VLA 水平，执行频率稳定在 <strong>30 Hz</strong>，而 π₀-FAST 约 16 Hz、Dream-VLA 约 15 Hz。</figcaption>
+    </figure>
+
+    <h3>消融实验（RQ4/RQ5）</h3>
+    <p>训练效率方面，非对称蒸馏（ℒ_AD）从微调权重出发，仅需 <strong>2,000 步</strong>即可收敛，约为从微调权重继续用 ℒ_BD 训练所需的 1/5，是从头训练步数的约 1/10（Figure 8）。</p>
+    <p>块大小方面，将块大小设为动作维度的倍数（本文为 7）比随机块大小在 LIBERO-Long 上平均成功率提高约 1.4 个百分点（74.7% vs 73.3%），且加速比更高（4.01× vs 3.95×）（Table 5）。</p>
+    <p>置信度阈值 τ_conf 方面，设为 0.5 时达到速度与成功率最优平衡，在 UD-VLA 上实现 2.8× 加速而成功率仅下降 ~2%（Figure 9）。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> Limitations</h2>
+    <div class="note"><b>Note:</b> 论文无独立的 Limitations 章节。以下局限性均为从论文设计与实验描述中推断（inferred from the design），非作者明确陈述。</div>
+    <details class="lim" open><summary>块大小需手工对齐动作维度</summary><p>Fast-dVLA 的最优块大小需为动作维度的整数倍（UD-VLA 设为 32 的倍数，DD-VLA/Dream-VLA 设为 7）。不同模型或任务需重新搜索超参，自动化块粒度选择尚未解决（inferred）。</p></details>
+    <details class="lim"><summary>蒸馏依赖已微调的双向 dVLA</summary><p>Fast-dVLA 的非对称蒸馏以双向 dVLA 的微调权重为教师起点；对于全新任务或无法获得已微调模型的场景，需额外先做标准微调，增加了准备成本（inferred）。</p></details>
+    <details class="lim"><summary>真实世界任务范围有限</summary><p>真实机器人实验仅覆盖 3 类桌面操控任务（传送带拣取、蔬菜归类、蔬菜取用），所用 AgileX 双臂平台与工业环境存在差距；长时序、接触丰富或高动态任务的实时性能尚未验证（inferred）。</p></details>
+    <details class="lim"><summary>SimplerEnv 部分任务成功率低于基线</summary><p>在 SimplerEnv 的"Carrot on Plate"和"Eggplant in Basket"任务上，Fast-dVLA + Dream-VLA 的成功率（54.1% 和 54.1%）低于 Dream-VLA 原始值（45.8% 和 100.0%，其中"Eggplant"下降幅度较大），说明加速策略在特定任务上存在成功率代价（stated in Table 4）。</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · Fast-dVLA: Accelerating Discrete Diffusion VLA to Real-Time Performance · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2603.25661">https://arxiv.org/abs/2603.25661</a> &nbsp;|&nbsp;
+    Project: <a href="https://chris1220313648.github.io/Fast-dVLA/">https://chris1220313648.github.io/Fast-dVLA/</a>
+  </div>
+</footer>
+
+</body>
+</html>

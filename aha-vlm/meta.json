@@ -1,0 +1,22 @@
+{
+  "slug": "aha-vlm",
+  "title": "AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation",
+  "arxiv_id": "2410.00371",
+  "url": "https://arxiv.org/abs/2410.00371",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "failure detection",
+    "failure reasoning",
+    "robotic manipulation",
+    "vision-language model",
+    "instruction tuning",
+    "FailGen 数据生成",
+    "zero-shot manipulation",
+    "下游任务增强",
+    "LLaVA",
+    "Foundation Models for Robotics"
+  ],
+  "summary_zh": "AHA 是一个开源 VLM，将机器人操作失败检测重新定义为自由形式推理任务，通过 FailGen 自动生成 49K 失败轨迹数据集进行指令微调，在多项评测中超越 GPT-4o ICL 达 10.3%，并将三类下游操作任务的平均成功率提升 21.4%。",
+  "date": "2026-06-23",
+  "source": "pdf"
+}

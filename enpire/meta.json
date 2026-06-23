@@ -1,0 +1,22 @@
+{
+  "slug": "enpire",
+  "title": "ENPIRE: Agentic Robot Policy Self-Improvement in the Real World",
+  "arxiv_id": "",
+  "url": "https://research.nvidia.com/labs/gear/enpire/",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "agentic robot",
+    "policy self-improvement",
+    "coding agent",
+    "机器人灵巧操作",
+    "reinforcement learning",
+    "behavior cloning",
+    "fleet scaling",
+    "autoresearch",
+    "real-world robot",
+    "pass@8"
+  ],
+  "summary_zh": "ENPIRE 是一个面向编程智能体的框架，通过物理反馈闭环让前沿代码智能体自主迭代机器人策略，在 Push-T、插针、GPU 插拔、切扎带等真实灵巧操作任务上达到 99% pass@8 成功率，无需人工监督。",
+  "date": "2026-06-23",
+  "source": "project-page"
+}

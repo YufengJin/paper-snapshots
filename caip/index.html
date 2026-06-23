@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--
+  Paper Poster — 自动生成，勿手改。中文海报，无 EN 版本。
+  Body text in 中文; academic terms / model names / metrics / quoted phrases kept in English.
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIP：Contrastive Action-Image Pre-training for Visuomotor Control</title>
+<meta name="keywords" content="对比学习, 视觉运动控制, 自我中心视频, 手部姿态, 视觉编码器, visuomotor control, contrastive pre-training, egocentric video, dexterous manipulation, action-image alignment">
+<meta name="description" content="CAIP 用大规模人类第一视角视频中的手部姿态作为末端执行器动作的代理，通过对比学习训练出动作感知视觉编码器，在真实世界灵巧操纵任务上达到 76% 平均成功率，超越 DINOv2、SigLIP 2、MVP 等最强基线 30 个百分点以上。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:38px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics · arXiv 2026</span>
+    <h1>CAIP：Contrastive Action-Image Pre-training for Visuomotor Control</h1>
+    <div class="sub">用人类手部姿态作为动作代理，从第一视角视频中学习动作感知视觉表示</div>
+    <div class="authors">Yuvan Sharma*, Dantong Niu*, Anirudh Pai*, Zekai Wang, Zhuoyang Liu, Baifeng Shi, Stefano Saravalle, Boning Shao, Ruijie Zheng, Jing Wang, Konstantinos Kallidromitis, Yusuke Kato, Fabio Galasso, Yuke Zhu, Danfei Xu, Linxi "Jim" Fan, Jitendra Malik†, Trevor Darrell†, Roei Herzig† &nbsp;·&nbsp; UC Berkeley &amp; NVIDIA</div>
+    <p class="lead">现有视觉编码器缺乏"动作感知"——它们理解语义，却不关注与物理交互相关的区域。CAIP 提出以大规模人类第一视角视频中的 3D 手部姿态为末端执行器动作的代理，通过 SigLIP 风格的对比损失将"动作嵌入"与"文本条件图像嵌入"对齐，在只用 88 小时机器人数据的前提下，于真实灵巧操纵任务上达到 <strong>76% 平均成功率</strong>，超越最强基线 SigLIP 2（43.4%）逾 30 个百分点。</p>
+    <div class="meta">
+      <span>32,041 小时自我中心视频</span>
+      <span>6 项真实操纵任务</span>
+      <span>Dexmate Vega + Sharpa Wave 手</span>
+      <span><a href="https://arxiv.org/abs/2606.17256">📄 arXiv:2606.17256</a></span>
+    </div>
+    <div class="kw">
+      <span>对比预训练</span>
+      <span>视觉运动控制</span>
+      <span>自我中心视频</span>
+      <span>手部姿态代理</span>
+      <span>视觉编码器</span>
+      <span>灵巧操纵</span>
+      <span>contrastive pre-training</span>
+      <span>egocentric video</span>
+      <span>action-image alignment</span>
+      <span>dexterous manipulation</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机</h2>
+    <p class="lead">现有机器人视觉编码器面临双重困境：一方面，机器人轨迹数据规模远不及互联网图文数据；另一方面，用图文对比（CLIP/SigLIP）或掩码自编码（MAE/DINOv2）预训练的编码器虽捕获语义或空间结构，却<strong>从未接触过配对的视觉-动作信号</strong>，因此在策略学习中产生根本性的表示错位。</p>
+    <blockquote>"robot trajectories, the most direct source of this paired signal, are not available at pre-training scale, motivating us to extract action signals from abundant human video instead."</blockquote>
+    <p>CAIP 的核心洞察：人类手部姿态（3D 关键点）在形式上类似于机器人末端执行器轨迹，可以从海量第一视角视频中廉价获取，从而弥合人类示范与稀缺机器人数据之间的鸿沟。</p>
+    <figure>
+      <img src="img/teaser.webp" alt="CAIP teaser — 三栏对比图">
+      <figcaption><strong>Figure 1（左）</strong>：显著图对比——SigLIP 关注语义区域，DINOv2 关注空间结构，而 CAIP 的注意力集中于手与操纵相关物体。<strong>（中）</strong>：CAIP 预训练框架概览：手部姿态动作与图文对作为正负样本输入对比损失。<strong>（右）</strong>：在六项真实操纵任务上，CAIP（76%）大幅领先 R3M（17%）、MVP（42%）、DINOv2（42%）与 SigLIP 2（43%）。</figcaption>
+    </figure>
+    <div class="kpi">
+      <div><b>76%</b><small>CAIP 平均成功率</small></div>
+      <div><b>43.4%</b><small>最强基线 SigLIP 2</small></div>
+      <div><b>>30pp</b><small>超越最强基线的提升幅度</small></div>
+      <div><b>32,041 h</b><small>自我中心预训练视频</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法</h2>
+    <p class="lead">CAIP 包含三个编码器（视觉、语言、动作），通过两阶段注意力池化生成文本条件图像嵌入，再与动作嵌入用 SigLIP 风格 sigmoid 对比损失对齐。整套系统基于大规模自我中心人类视频预训练，下游策略使用冻结的视觉编码器。</p>
+    <figure>
+      <img src="img/architecture.webp" alt="CAIP 架构图">
+      <figcaption><strong>Figure 2 — CAIP architecture。</strong> ViT-L/16 视觉主干（初始化自 SigLIP 2）将图像切成 N 个 patch token；24 层文本 Transformer 编码语言指令为 L 个 token。<strong>第一阶段注意力池化</strong>：以文本 token 为 query、patch 特征为 key/value，产生文本对齐视觉特征（B×L×C）。<strong>第二阶段注意力池化</strong>：可学习 query 进一步压缩为单一文本条件图像嵌入（B×1×C）。动作编码器为 4 层 Transformer，接收 T 步 42 关键点动作块（A_d=378），通过 [CLS] token 输出动作嵌入（B×1×C），从头训练。两路嵌入由 SigLIP 对比损失对齐。</figcaption>
+    </figure>
+
+    <h3>预训练目标：SigLIP 风格 sigmoid 对比损失</h3>
+    <p>与 CLIP 的 softmax InfoNCE 不同，SigLIP 的 sigmoid 损失将每对图-动作视为独立二分类问题，<strong>无需跨 batch 全局归一化</strong>，在大 batch 下训练更稳定。正样本对为同一场景帧对应的"文本条件图像嵌入 + 动作嵌入"，batch 内其余配对均为负样本。</p>
+
+    <h3>动作表示：手部姿态 Action Chunking</h3>
+    <p>每个训练样本包含从当前帧起的 T 步未来手部动作块。每时刻手部姿态用 42 个关键点（双手各 21 个，含手腕）的 SE(3) 变换表示（MANO 手型约定），A_d = 378（= 42 × 9）。设 T = 64，约覆盖 30 Hz 下 2 秒的未来手部运动。相对变换定义为：时刻 t 相对于基准帧的 SE(3) 变换——与下游机器人策略输出的 delta 控制形式完全对应。</p>
+
+    <h3>下游策略架构</h3>
+    <p>视觉编码器冻结后输出 per-patch 视觉 token 与文本 token，投影后送入 Qwen3.5-0.8B decoder-only Transformer（从头训练），最终由 flow-matching 动作头预测动作块。评估平台为 Dexmate Vega 双臂机器人 + 22-DoF Sharpa Wave 灵巧手，配三路摄像头（立体头部 + 双腕）。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验</h2>
+    <p class="lead">在六项真实世界灵巧操纵任务上（每任务 12 次试验，成功率 %），与 R3M、VideoMAE、VC-1、MVP、DINOv2、SigLIP 和 SigLIP 2 对比；同时在保留自我中心数据集上做 zero-shot 动作检索，以及光照 / 干扰物环境鲁棒性分析。每项任务约 200 次示范（pour 为 150 次）。</p>
+
+    <figure>
+      <img src="img/results.webp" alt="Table 1 — 六任务成功率对比">
+      <figcaption><strong>Table 1。</strong>六项操纵任务成功率（%），每任务 12 次试验。CAIP 在五项任务中排名第一，平均成功率 76.04%，比最强基线 SigLIP 2（43.40%）高出逾 30 个百分点。MVP 在 Dispense Soap 上达 93.75%，但在其他任务严重退化（Turn On Lamp 仅 8.33%），表明非动作感知表示缺乏跨任务一致性。</figcaption>
+    </figure>
+
+    <table>
+      <tr><th>Method</th><th>Fold Shorts</th><th>Pour</th><th>Pick Fruits</th><th>Dispense Soap</th><th>Turn On Lamp</th><th>Pull Tissue</th><th>Avg.</th></tr>
+      <tr><td>R3M</td><td>14.58</td><td>12.50</td><td>2.08</td><td>29.17</td><td>8.33</td><td>37.50</td><td>17.36</td></tr>
+      <tr><td>Qwen3.5 ViT</td><td>27.08</td><td>22.92</td><td><strong>60.42</strong></td><td>72.92</td><td>8.33</td><td>12.50</td><td>34.03</td></tr>
+      <tr><td>VideoMAE</td><td>22.92</td><td>52.08</td><td>0.00</td><td>37.50</td><td>25.00</td><td>18.75</td><td>26.04</td></tr>
+      <tr><td>VC-1</td><td>18.75</td><td>56.25</td><td>0.00</td><td>62.50</td><td>0.00</td><td>22.92</td><td>26.74</td></tr>
+      <tr><td>MVP</td><td>54.17</td><td>62.50</td><td>2.08</td><td>93.75</td><td>8.33</td><td>31.25</td><td>42.01</td></tr>
+      <tr><td>DINOv2</td><td>22.92</td><td>81.25</td><td>52.08</td><td>50.00</td><td>25.00</td><td>20.83</td><td>42.01</td></tr>
+      <tr><td>SigLIP</td><td>12.50</td><td>70.83</td><td>37.50</td><td>83.33</td><td>25.00</td><td>25.00</td><td>42.36</td></tr>
+      <tr><td>SigLIP 2</td><td>4.17</td><td>35.42</td><td>52.08</td><td>93.75</td><td>50.00</td><td>25.00</td><td>43.40</td></tr>
+      <tr style="background:var(--panel2)"><td><strong>CAIP (Ours)</strong></td><td class="good">68.75</td><td class="good">83.33</td><td>56.25</td><td class="good">100.00</td><td class="good">75.00</td><td class="good">72.92</td><td class="good">76.04</td></tr>
+    </table>
+
+    <h3>Zero-Shot 动作检索与线性探针</h3>
+    <p>在保留自我中心数据集上（K=50 K-means 动作类别）：CAIP 的 zero-shot 检索（无任何域内监督）在仅 16 样本/类时就超越所有基线的线性探针上界，说明其表示空间已内化了可迁移的动作语义结构（Figure 3）。</p>
+
+    <figure>
+      <img src="img/retrieval.webp" alt="Figure 3 — 动作检索曲线与鲁棒性表格">
+      <figcaption><strong>Figure 3（左）</strong>：线性探针与 zero-shot 动作检索准确率随标注样本数变化曲线。CAIP (zero-shot) 在 16 样本/类以内持续优于所有基线线性探针。<strong>（Tables 2&3）</strong>：光照扰动与干扰物测试下，CAIP 在全部条件中均保持最高成功率，相比 MVP 和 Qwen3.5 ViT 退化幅度最小。</figcaption>
+    </figure>
+
+    <h3>环境鲁棒性（Tables 2 &amp; 3）</h3>
+    <p>光照扰动（额外灯泡 / 减光）与两个干扰物（红色书 + 河内塔玩具）场景下，CAIP 在所有条件下保持最高成功率：光照平均 81.25% / 51.39% / 43.06%，干扰物平均 81.25% / 52.78%。而 MVP 在干扰物条件下从原始 52.08% 骤降至 9.72%，Qwen3.5 ViT 从 36.11% 降至 28.47%。CAIP 的动作感知表示对场景级干扰更具鲁棒性。</p>
+
+    <h3>Scaling Ablations</h3>
+    <p>对视觉主干从 ViT-B → ViT-L → ViT-SO400M 进行 scaling 消融：ViT-B 到 ViT-L 的过渡带来最大的平均提升（>30%），ViT-L 提供最佳性能/参数量/推理速度权衡，因此选为主实验编码器。</p>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性</h2>
+    <div class="note"><b>Note：</b>以下两点均为作者在"Limitations and Future Work"一节明确陈述的局限。</div>
+
+    <details class="lim" open>
+      <summary>负样本歧义：连续动作空间中的假负样本问题</summary>
+      <p>对比目标将 batch 内所有非配对的图-动作对均视为负样本，忽略动作间的物理相似性。"distinct trajectories drawn from different timesteps or scenes may feature similar hand motions (e.g., two pouring actions or two reaches toward similar targets), yet the loss will actively push their representations apart." 这一假设可能弱化学习信号、限制表示质量。未来可探索依动作空间距离对负样本加权的 soft contrastive 目标。</p>
+    </details>
+
+    <details class="lim">
+      <summary>人体形态偏差：MANO 骨骼对非五指末端执行器的迁移性未知</summary>
+      <p>动作表示以 42 关键点 MANO 手型骨骼为中心，"biases the learned features toward human hands." 对 Sharpa Wave 五指手迁移良好，但对平行夹爪或三指爪等平行形态的可迁移性是开放问题。"Future work should evaluate CAIP across a broader range of end-effector morphologies."</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · CAIP · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2606.17256">https://arxiv.org/abs/2606.17256</a>
+  </div>
+</footer>
+
+</body>
+</html>

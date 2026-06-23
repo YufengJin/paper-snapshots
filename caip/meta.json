@@ -1,0 +1,22 @@
+{
+  "slug": "caip",
+  "title": "Contrastive Action-Image Pre-training for Visuomotor Control",
+  "arxiv_id": "2606.17256",
+  "url": "https://arxiv.org/abs/2606.17256",
+  "category": "机器人 · Robotics",
+  "keywords": [
+    "对比预训练",
+    "视觉运动控制",
+    "自我中心视频",
+    "手部姿态代理",
+    "视觉编码器",
+    "灵巧操纵",
+    "contrastive pre-training",
+    "egocentric video",
+    "action-image alignment",
+    "dexterous manipulation"
+  ],
+  "summary_zh": "CAIP 以大规模人类第一视角视频中的 3D 手部姿态为末端执行器动作的代理，通过 SigLIP 风格对比损失将动作嵌入与文本条件图像嵌入对齐，在 32,041 小时自我中心视频上预训练视觉编码器，于真实灵巧操纵任务上实现 76% 平均成功率，超越 DINOv2、SigLIP 2、MVP 等最强基线逾 30 个百分点。",
+  "date": "2026-06-23",
+  "source": "arxiv-pdf"
+}

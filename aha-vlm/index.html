@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!--
+  AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation
+  arXiv: 2410.00371 | 中文海报 | 机器人 · Robotics
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHA: 检测与推理机器人操作失败的视觉语言模型</title>
+<meta name="keywords" content="failure detection, failure reasoning, robotic manipulation, vision-language model, instruction tuning, FailGen, 数据生成, LLaVA, 下游任务增强, zero-shot manipulation">
+<meta name="description" content="AHA 是一个开源 VLM，通过自然语言检测并推理机器人操作失败，超越 GPT-4o 10.3%，并将下游任务成功率平均提升 21.4%。">
+<style>
+  :root{ --bg:#f8f8f6; --panel:#ffffff; --panel2:#f1efea; --ink:#201f1c; --muted:#6b675f;
+    --acc:#5a5953; --acc2:#5a5953; --warn:#b45309; --line:#e8e4dc; --chip:#f1efea; }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:17px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 38px;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(90,89,83,.06),transparent)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .kw span{font-size:12.5px;color:var(--acc2);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.12em;color:var(--acc);border:1px solid var(--line);
+    padding:4px 12px;border-radius:999px;margin-bottom:18px;background:var(--chip)}
+  h1{font-size:38px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:8px}
+  .authors{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+  .lead{font-size:18.5px;color:#3a3833}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .meta span{font-size:13.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(248,248,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;padding:10px 22px}
+  nav a{font-size:14px;color:var(--muted);padding:7px 13px;border-radius:8px}
+  nav a:hover{color:var(--ink);background:var(--panel2);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:27px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:15px;color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:2px 10px;background:var(--chip);font-weight:600}
+  h3{font-size:20px;margin:30px 0 8px;color:#3a3833}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  @media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}}
+  .kpi div{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center}
+  .kpi b{display:block;font-size:30px;color:var(--acc);font-weight:800;line-height:1.1}
+  .kpi small{color:var(--muted);font-size:13px;display:block;margin-top:6px}
+  figure{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;border-radius:8px;display:block;margin:0 auto;background:#fff}
+  figcaption{color:var(--muted);font-size:14px;margin-top:12px;text-align:left;line-height:1.6}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px} .card h3{margin-top:0}
+  ul{padding-left:22px}li{margin:7px 0}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;overflow:hidden;border-radius:12px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left} th{background:var(--panel2);color:#3a3833}
+  td:not(:first-child){text-align:center} .good{color:var(--acc2);font-weight:700}
+  blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;color:#3a3833;font-style:italic}
+  .note{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.25);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:18px 0;color:#7a4b16}
+  .note b{color:var(--warn)}
+  .lim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin:16px 0}
+  .lim summary{cursor:pointer;font-weight:600;color:#3a3833;padding:14px 0;font-size:17px;list-style:none}
+  .lim summary::-webkit-details-marker{display:none}
+  .lim summary:before{content:"▸";color:var(--acc);margin-right:10px} .lim[open] summary:before{content:"▾"}
+  .lim p{color:var(--muted);margin-top:0}
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14px;text-align:center}
+  .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .badge{font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">机器人 · Robotics &nbsp;|&nbsp; arXiv 2024</span>
+    <h1>AHA: 检测与推理机器人操作失败的视觉语言模型</h1>
+    <div class="sub">AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation</div>
+    <div class="authors">Jiafei Duan · Wilbert Pumacay · Nishanth Kumar · Yi Ru Wang · Shulin Tian · Wentao Yuan · Ranjay Krishna · Dieter Fox · Ajay Mandlekar* · Yijie Guo*<br>
+    <span style="font-size:13px">NVIDIA · University of Washington · Universidad Católica San Pablo · MIT · Nanyang Technological University · Allen Institute for AI &nbsp;（*共同通讯）</span></div>
+    <p class="lead">AHA 是一个开源的视觉语言模型（VLM），专为机器人操作失败检测与推理而设计。通过将失败检测重新定义为<strong>自由形式推理任务</strong>而非二分类，AHA 能够跨越不同机器人、任务和环境生成详细的自然语言解释。在多项评测中，AHA 超越了第二佳模型（GPT-4o in-context learning）10.3%，并将三项下游操作任务的平均成功率提升了 21.4%。</p>
+    <div class="meta">
+      <span>arXiv: 2410.00371 &nbsp;|&nbsp; 2024-10-01</span>
+      <span><a href="https://arxiv.org/abs/2410.00371">📄 arXiv 原文</a></span>
+      <span><a href="https://aha-vlm.github.io">🌐 Project Page</a></span>
+      <span>基础模型: LLaVA-v1.5-13B (LLaMA-2-13B)</span>
+    </div>
+    <div class="kw">
+      <span>failure detection</span>
+      <span>failure reasoning</span>
+      <span>robotic manipulation</span>
+      <span>vision-language model</span>
+      <span>instruction tuning</span>
+      <span>FailGen 数据生成</span>
+      <span>zero-shot manipulation</span>
+      <span>下游任务增强</span>
+      <span>LLaVA</span>
+      <span>Foundation Models for Robotics</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#motivation">1 · 动机</a>
+  <a href="#method">2 · 方法</a>
+  <a href="#exp">3 · 实验</a>
+  <a href="#limit">4 · 局限性</a>
+</div></nav>
+
+<!-- ===== MOTIVATION ===== -->
+<section id="motivation">
+  <div class="wrap">
+    <h2><span class="n">01</span> 动机 Motivation</h2>
+    <p class="lead">机器人在开放世界环境中执行操作任务时，不仅需要完成任务本身，还需要能够<strong>检测并学习自身失败</strong>。现有 VLM 和 LLM 虽然提升了机器人的空间推理与问题求解能力，但在失败识别上依然薄弱，限制了其实际应用价值。</p>
+    <blockquote>
+      "How can we enable these models to autonomously detect and reason about their own failures, particularly in robotics, where interactions and environments are stochastic and unpredictable?"
+    </blockquote>
+    <p>现有方法将失败检测视为<strong>二元分类问题</strong>（成功 / 失败），无法解释为何失败。AHA 将其重新定义为<strong>自由形式推理任务</strong>：先判断子任务是否成功，若失败则生成简洁的自然语言解释，说明失败的原因与发生方式。这使得 AHA 能够跨越不同机器人形态、相机视角、任务和环境进行泛化，并无缝集成到利用 VLM/LLM 的下游机器人应用中。</p>
+
+    <figure>
+      <img src="img/teaser.webp" alt="AHA 应用场景概览">
+      <figcaption><strong>图 1：AHA 应用场景。</strong>AHA 是一个专为机器人操作失败检测与推理设计的视觉语言模型，可嵌入三类利用 VLM 的机器人应用：（上）VLM 子任务验证（Manipulate-Anything 框架）；（左下）VLM 奖励函数生成（Eureka 框架）；（右下）VLM 任务规划生成（Task and Motion Planning）。在各框架中，AHA 提供的失败反馈能够加速并提升任务执行性能。</figcaption>
+    </figure>
+
+    <div class="kpi">
+      <div><b>+10.3%</b><small>超越 GPT-4o ICL<br>（第二佳模型）</small></div>
+      <div><b>+35.3%</b><small>超越六模型平均<br>（含五个 SOTA VLM）</small></div>
+      <div><b>+21.4%</b><small>下游三任务<br>平均成功率提升</small></div>
+      <div><b>49K+</b><small>AHA 数据集<br>失败轨迹图文对</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section id="method">
+  <div class="wrap">
+    <h2><span class="n">02</span> 方法 Method</h2>
+    <p class="lead">AHA 的方法包含两个核心组成部分：一是 <strong>FailGen</strong>——用于程序化生成失败演示数据的可扩展数据生成框架；二是基于 LLaVA 架构的<strong>指令微调流程</strong>，使 VLM 能够完成失败推理任务。</p>
+
+    <figure>
+      <img src="img/pipeline.webp" alt="AHA 整体流程图">
+      <figcaption><strong>图 2：AHA 整体流程概览。</strong>（上）数据生成：以正常任务轨迹为输入，通过 FailGen 在仿真中对所有关键帧进行程序化扰动，系统性地生成失败演示，并同步生成对应的问答提示对用于微调。（下）指令微调：遵循 LLaVA-v1.5 相同的微调流程，仅更新语言模型（LLaMA-2-13B）和投影层权重，冻结图像编码器与分词器。</figcaption>
+    </figure>
+
+    <h3>失败推理问题定式（Failure Reasoning Formulation）</h3>
+    <p>AHA 将机器人操作轨迹定义为一系列子任务 {S₀, S₁, S₂, …, Sₜ}，每个子任务由两个连续关键帧表示。对于每个子任务，模型接收：（1）描述当前子任务的文本提示；（2）包含多视角关键帧轨迹的结构化图像矩阵 I（行为相机视角 V₀…Vₙ，列为时序关键帧）。模型需要输出：子任务是否成功（"Yes"/"No"），若失败则给出简洁的自然语言解释。这种格式化输入支持跨不同数据集和视角对数据的统一处理。</p>
+
+    <h3>FailGen：失败数据自动生成框架</h3>
+    <p>FailGen 是一个可应用于任意机器人仿真器的环境包装器，通过对关键帧进行扰动将成功轨迹转化为失败轨迹。论文定义了<strong>七种失败模式</strong>的分类体系：</p>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0;font-size:16px;">以对象为中心（Object-centric）</h3>
+        <ul>
+          <li><strong>No_Grasp</strong>：夹爪到达目标抓取位姿但未闭合，无法完成抓取</li>
+          <li><strong>Slip</strong>：成功抓取后在移动过程中夹持力不足导致物体滑落</li>
+          <li><strong>Wrong_Object</strong>：夹爪操作了错误的目标物体</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;font-size:16px;">以动作为中心（Action-centric）</h3>
+        <ul>
+          <li><strong>Translation</strong>：关键帧沿 X/Y/Z 轴存在位移偏移</li>
+          <li><strong>Rotation</strong>：关键帧在 roll/yaw/pitch 上存在旋转偏差</li>
+          <li><strong>No_Rotation</strong>：到达平移位姿但未完成必要旋转</li>
+          <li><strong>Wrong_Action</strong>：关键帧执行顺序错误</li>
+        </ul>
+      </div>
+    </div>
+    <p>FailGen 通过遍历 RLBench 中每个任务的所有关键帧，针对七种失败模式穷举所有可能配置，生成 YAML 格式配置文件，并结合语言模板自动标注问答对。最终在 79 个仿真任务中生成了包含 <strong>49K 图像-文本对</strong>的 AHA 数据集。FailGen 还成功扩展到 ManiSkill 仿真器，证明了其跨仿真环境的通用性。</p>
+
+    <h3>指令微调数据混合（Co-finetuning Data Mix）</h3>
+    <p>为保留 VLM 的通用视觉理解能力，AHA 采用数据混合策略：将 AHA 数据集（49K 失败推理对）与 VQA 数据集（665K 对话对）和 LVIS 数据集（100K 目标检测实例）联合用于微调。微调时，仅更新 LLM（LLaMA-2-13B）参数和 2 层投影 MLP，图像编码器与分词器保持冻结。</p>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <div class="wrap">
+    <h2><span class="n">03</span> 实验 Experiments</h2>
+    <p class="lead">AHA 在三个评测数据集上与六个 SOTA VLM（含开源和闭源模型）进行了对比，采用四个评估指标；同时在三项下游机器人任务中验证其实用价值。</p>
+
+    <h3>评测基准与指标</h3>
+    <p>三个评测数据集均未出现在微调数据中，覆盖不同机器人形态、任务和环境：</p>
+    <ul>
+      <li><strong>AHA dataset (Test)</strong>：11K 图像-问题对，来自 10 个 RLBench 任务（与训练集无重叠），测试同域泛化</li>
+      <li><strong>ManiSkill-Fail</strong>：130 对，由 FailGen 在 ManiSkill 仿真器上生成，测试跨仿真域泛化</li>
+      <li><strong>RoboFail</strong>：来自真实 UR5 机器人的失败数据，测试仿真-到-现实泛化</li>
+    </ul>
+    <p>四个评估指标：ROUGE-L（文本质量）、Cosine Similarity（语义相似度）、Binary Success（成功检测准确率）、LLM Fuzzy Match（使用 claude-3-sonnet 评估语义匹配）。</p>
+
+    <figure>
+      <img src="img/results.webp" alt="定量评测结果">
+      <figcaption><strong>表 2：失败检测与推理的定量评测。</strong>AHA-13B 在几乎所有评测数据集和指标上均超越所有对比 VLM（AHA 测试集上仅 GPT-4o 在 Binary Success 指标上与 AHA 差距小于 3%）。AHA-13B 在 ManiSkill-Fail 上以 LLM Fuzzy Match 0.633 超越 GPT-4o ICL 的 0.630；在 RoboFail 上以 0.465 超越 GPT-4o ICL 的 0.418。</figcaption>
+    </figure>
+
+    <h3>主要量化结论</h3>
+    <table>
+      <tr>
+        <th>对比维度</th>
+        <th>基线</th>
+        <th>AHA-13B</th>
+        <th>提升幅度</th>
+      </tr>
+      <tr>
+        <td>vs. 第二佳模型（GPT-4o ICL）</td>
+        <td>—</td>
+        <td class="good">超越</td>
+        <td>平均 +10.3%</td>
+      </tr>
+      <tr>
+        <td>vs. 六模型平均</td>
+        <td>—</td>
+        <td class="good">超越</td>
+        <td>平均 +35.3%</td>
+      </tr>
+      <tr>
+        <td>vs. LLaVA-v1.5-13B（基础模型）</td>
+        <td>0.351 (RoboFail LLM Fuzzy)</td>
+        <td class="good">0.465</td>
+        <td>+43.0%（平均跨数据集）</td>
+      </tr>
+      <tr>
+        <td>ManiSkill-Fail Binary Success</td>
+        <td>GPT-4o ICL: 0.971</td>
+        <td class="good">1.000</td>
+        <td>完美检测率</td>
+      </tr>
+    </table>
+
+    <h3>通用 VQA 能力保留</h3>
+    <p>在标准 VQA 基准测试中，AHA-13B 与 LLaVA-v1.5-13B（基础模型）表现相当（如 MMBench 65.20 vs. 67.70，TextVQA 65.20 vs. 67.40，VizWiz <strong>53.45 vs. 53.01</strong>），证明微调后 AHA 保留了通用 VLM 能力。</p>
+
+    <figure>
+      <img src="img/downstream.webp" alt="数据缩放规律与下游任务性能">
+      <figcaption><strong>图 3：（左）AHA 数据集的缩放规律。</strong>使用 3k、6k、12k、34k、48k、60k 规模数据微调，模型在 ManiSkill-Fail 上的平均二次拟合梯度为 0.0022，表明进一步扩大数据可持续提升性能。<strong>（右）下游机器人任务性能。</strong>AHA-13B 在奖励函数生成（Eureka）、任务规划（TAMP/PRoC3S）和子任务验证（Manipulate-Anything）三类应用中，均超越 GPT-4o，平均任务成功率提升 21.4%。</figcaption>
+    </figure>
+
+    <h3>下游机器人应用</h3>
+    <ul>
+      <li><strong>奖励函数生成（Eureka + ManiSkill）</strong>：在 5 个强化学习任务上，AHA 提供的失败推理反馈帮助改进稠密奖励函数，<strong>任务成功率超越 GPT-4o 达 22.34%</strong>。</li>
+      <li><strong>任务规划（PRoC3S/TAMP）</strong>：在 3 个任务各 10 次试验中，AHA 识别失败原因并反馈至 LMP 重规划环节，<strong>超越 GPT-4o 达 36.7%</strong>。</li>
+      <li><strong>子任务验证（Manipulate-Anything）</strong>：替换原 GPT-4V 子任务验证模块后，在 4 个 RLBench 任务（各 25 幕）中整体任务成功率平均提升 <strong>5%</strong>。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== LIMITATIONS ===== -->
+<section id="limit">
+  <div class="wrap">
+    <h2><span class="n">04</span> 局限性 Limitations</h2>
+    <div class="note"><b>说明：</b>以下局限性内容均由论文作者在 Section 6 (Conclusion) 中明确陈述。</div>
+    <details class="lim" open>
+      <summary>失败推理与微调数据分布高度相关</summary>
+      <p>"AHA currently outputs language reasoning that is closely aligned with the failure scenarios in the fine-tuning data."（AHA 目前的语言推理输出与微调数据中的失败场景高度对齐。）这意味着对于超出七种失败模式分类体系之外的开放式失败，AHA 的输出能力受到限制，泛化范围有边界。</p>
+    </details>
+    <details class="lim">
+      <summary>FailGen 依赖仿真器中的成功演示蒸馏</summary>
+      <p>"FailGen systematically curates failure data from simulations, distilling large pretrained policies to perform diverse tasks in simulation and sampling failure modes would allow us to generate more open-ended failure examples, potentially enhancing the instruction-tuned performance of AHA."（FailGen 从仿真中系统地整理失败数据，若能从大型预训练策略中蒸馏多样化任务并在仿真中采样失败模式，可生成更具开放性的失败示例，进一步提升 AHA 的微调表现。）目前数据来源仍主要依赖程序化扰动而非策略自然失败。</p>
+    </details>
+    <details class="lim">
+      <summary>开放式失败覆盖范围有待扩展（推断）</summary>
+      <p>仅覆盖七类预定义失败模式，真实世界中可能出现的其他失败类型（如传感器噪声、环境光变化、动态遮挡等）尚未被 AHA 数据集系统性涵盖。这是从论文设计中推断出的潜在局限，论文中未单独列举。</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Compiled from the paper's sources and figures · AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation · for study reference only<br>
+    原文 / Paper: <a href="https://arxiv.org/abs/2410.00371">https://arxiv.org/abs/2410.00371</a>
+    &nbsp;|&nbsp;
+    Project: <a href="https://aha-vlm.github.io">aha-vlm.github.io</a>
+  </div>
+</footer>
+
+</body>
+</html>
